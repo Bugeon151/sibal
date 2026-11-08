@@ -61,6 +61,16 @@ export function PaperCard({ paper }: { paper: Paper }) {
             원문 PDF ↗
           </a>
         )}
+        {/* DOI가 등록되지 않았거나 출판사 페이지가 막힐 때를 위한 대안 */}
+        <a
+          className="btn sm ghost"
+          href={`https://scholar.google.com/scholar?q=${encodeURIComponent(`"${paper.title}"`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="논문 페이지가 안 열리면 구글 학술검색에서 같은 제목을 찾아요"
+        >
+          다른 곳에서 찾기 ↗
+        </a>
       </div>
       {open && <Abstract paper={paper} />}
     </article>

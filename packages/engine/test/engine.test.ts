@@ -296,8 +296,8 @@ describe('중계 함수 없이 (키 받기 전 실제 검색)', () => {
   it('영문 검색어가 없으면 한국어 키워드로 OpenAlex를 검색한다', async () => {
     const calls: string[] = []
     const e = createEngine({ relayBaseUrl: null, store: new MemoryStore(), now: () => NOW, fetch: async (u: string) => (calls.push(u), Response.json(OPENALEX_JSON)) })
-    await e.runResearch({ ...baseInput, keywords: ['탐구주제어'], question: '탐구주제어는 무엇인가?' })
-    expect(decodeURIComponent(calls[0]!)).toContain('search=탐구주제어')
+    await e.runResearch({ ...baseInput, topic: '탐구주제어의 현황', keywords: ['탐구주제어'], question: '탐구주제어는 무엇인가?' })
+    expect(decodeURIComponent(calls.find((u) => u.startsWith('https://api.openalex.org'))!)).toContain('search=탐구주제어')
   })
 })
 

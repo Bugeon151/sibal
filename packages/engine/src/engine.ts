@@ -13,6 +13,7 @@ import { Dictionary, keyOf } from './lexicon/dictionary'
 import { keywordPairs, searchKci } from './sources/kci'
 import { searchNews } from './sources/naver'
 import { searchOpenAlex } from './sources/openalex'
+import { lookupEnglish } from './sources/wikidata'
 import { SourceError, type Fetcher, type RawNews, type RawPaper } from './sources/types'
 import { defaultStore, type KeyValueStore } from './store'
 import { cleanInput, detectLang } from './text/normalize'
@@ -59,6 +60,8 @@ export type EngineOptions = {
    * - 'direct': 직접 호출만 / 'relay': 중계 함수만
    */
   openAlexRoute?: 'auto' | 'direct' | 'relay'
+  /** 사전에 없는 한국어 용어의 영어 이름을 Wikidata에서 찾을지 (기본 true) */
+  wikidata?: boolean
   /** 중계 함수 호출 제한용 임의 기기 ID. 화면 쪽에서 localStorage에 한 번 만들어 넘긴다. */
   deviceId?: string
 }
@@ -85,6 +88,8 @@ export function createEngine(opts: EngineOptions) {
   const now = opts.now ?? (() => new Date())
   const uuid = opts.uuid ?? (() => crypto.randomUUID())
   const relay = opts.relayBaseUrl?.trim() || null
+  // 캐시 이름공간: 데모·직접 호출·중계 함수별로 나눈다 (데모 결과가 실제 검색 캐시에 섞이지 않게)
+  const cacheNs = relay ?? 'direct'
   const relayHeaders = { 'X-Device-Id': opts.deviceId ?? uuid() }
 
   // ── 입력 검증 ──
@@ -130,11 +135,58 @@ export function createEngine(opts: EngineOptions) {
   // 검색어로 쓰기엔 너무 일반적인 키워드 (영문 검색어에서 뺀다)
   const GENERIC_KO = new Set(['사용', '이용', '활용', '활동', '정도', '수준', '방법', '요인'])
 
-  function englishKeywords(keywords: string[], kciPapers: RawPaper[]): string[] {
-    // 한국어 키워드마다 대표 영어 1개를 먼저, 남는 자리는 두 번째 표현으로 채운다
+  /**
+   * 주제·키워드를 영어로 옮길 단위로 나눈다. 붙어 있는 두 단어가 사전에 한 용어로 있으면(유전자 가위 → 유전자가위) 하나로 묶는다.
+   * 반환: 단위 목록과, 사전에 영어가 없는 Wikidata 조회 후보
+   */
+  function englishUnits(topic: string, keywords: string[]): { units: string[]; lookups: string[] } {
+    const seq = topic
+      .split(/\s+/)
+      .map((w) => tokenizer.tokens(w)[0] ?? '')
+      .filter((t) => /[가-힣]/.test(t) && !TOPIC_STOP.has(t))
+    const units: string[] = []
+    const lookups: string[] = []
+    for (let i = 0; i < seq.length; i++) {
+      const a = seq[i]!
+      const b = seq[i + 1]
+      if (b && dict.englishPhrases(`${a}${b}`).length > 0) {
+        units.push(`${a}${b}`)
+        i++
+        continue
+      }
+      if (b && !GENERIC_KO.has(a) && !GENERIC_KO.has(b) && dict.englishPhrases(a).length === 0) lookups.push(`${a} ${b}`)
+      units.push(a)
+    }
+    for (const k of keywords) for (const t of keyOf(k)) if (!TOPIC_STOP.has(t) && !units.includes(t) && !units.some((u) => u.includes(t) && u !== t)) units.push(t)
+    // 한 단어 조회는 3글자 이상만 (2글자는 동음이의어가 많다: 인상 → mudra). 2글자는 앞의 두 단어 묶음 조회로 대신한다
+    for (const u of units) if (!GENERIC_KO.has(u) && u.length >= 3 && /[가-힣]/.test(u) && dict.englishPhrases(u).length === 0) lookups.push(u)
+    return { units, lookups: [...new Set(lookups)].slice(0, 6) }
+  }
+
+  /** 사전에 없는 용어를 Wikidata에서 찾아 사전에 더한다 (기기 캐시 30일, 없는 것도 기억) */
+  async function learnFromWikidata(terms: string[]): Promise<void> {
+    if (terms.length === 0 || opts.wikidata === false) return
+    const known: Record<string, string> = {}
+    const missing: string[] = []
+    for (const t of terms) {
+      const hit = await store.get<string>(`wd:${t}`)
+      if (hit === undefined) missing.push(t)
+      else if (hit) known[t] = hit
+    }
+    const found = missing.length > 0 ? await lookupEnglish(fetcher, missing) : {}
+    for (const t of missing) await store.set(`wd:${t}`, found[t] ?? '', 30 * 24 * 3600_000)
+    for (const [term, en] of Object.entries({ ...known, ...found })) {
+      const parts = term.split(' ')
+      dict.addKoEn(parts.join(''), en)
+      // 구성 단어에 영어가 없으면 그 영어를 같이 걸어 둔다 (주제 포함률·근거 검사 매칭용)
+      for (const p of parts) if (dict.englishPhrases(p).length === 0) dict.addKoEn(p, en)
+    }
+  }
+
+  function englishKeywords(keywords: string[], kciPapers: RawPaper[], units: string[] = keywords.flatMap((k) => keyOf(k))): string[] {
+    // 단위마다 대표 영어 1개를 먼저, 남는 자리는 두 번째 표현으로 채운다
     // (한 키워드의 여러 표현이 자리를 다 차지해 '수면' 같은 핵심어가 빠지지 않게)
-    const perKeyword = keywords
-      .flatMap((k) => keyOf(k))
+    const perKeyword = units
       .filter((t) => !GENERIC_KO.has(t))
       .map((t) => dict.englishPhrases(t))
       .filter((list) => list.length > 0)
@@ -194,7 +246,7 @@ export function createEngine(opts: EngineOptions) {
 
   async function runResearch(input: RunResearchInput): Promise<RunResearchOutput> {
     if (input?.mode !== 'ai' && input?.mode !== 'search_only') throw new EngineError('INVALID_INPUT', '모드를 선택해 주세요.')
-    requireText(input.topic, config.limits.topicMin, config.limits.topicMax, '탐구 주제')
+    const topicText = requireText(input.topic, config.limits.topicMin, config.limits.topicMax, '탐구 주제')
     const question = requireText(input.question, config.limits.questionMin, config.limits.questionMax, '탐구 질문')
     const keywords = cleanKeywords(input.keywords, '키워드', true)
     let keywordsEn = cleanKeywords(input.keywordsEn, '영문 키워드', false)
@@ -232,17 +284,22 @@ export function createEngine(opts: EngineOptions) {
       return searchKci(fetcher, relay!, { query: keywords.slice(0, 2).join(' '), fromYear }, relayHeaders)
     }
     const kciP = sources.kci && relay
-      ? attempt('kci', () => cached(`cache:kci:${koQuery}:${fromYear}`, config.ttl.paperCacheMs, kciSearch))
+      ? attempt('kci', () => cached(`cache:${cacheNs}:kci:${koQuery}:${fromYear}`, config.ttl.paperCacheMs, kciSearch))
       : Promise.resolve(null)
     const newsP = sources.news && relay
-      ? attempt('news', () => cached(`cache:news:${koQuery}`, config.ttl.newsCacheMs, () => searchNews(fetcher, relay, { query: koQuery }, relayHeaders)))
+      ? attempt('news', () => cached(`cache:${cacheNs}:news:${koQuery}`, config.ttl.newsCacheMs, () => searchNews(fetcher, relay, { query: koQuery }, relayHeaders)))
       : Promise.resolve(null)
 
     // 영문 검색어: 학생 입력 → 사전 → (없으면) KCI 한·영 키워드
-    if (keywordsEn.length === 0) keywordsEn = englishKeywords(keywords, [])
+    // 사전에 없는 용어는 Wikidata에서 영어 이름을 찾는다 (KCI·뉴스 검색과 동시에)
+    const { units, lookups } = englishUnits(topicText, keywords)
+    if (keywordsEn.length === 0) {
+      await learnFromWikidata(lookups)
+      keywordsEn = englishKeywords(keywords, [], units)
+    }
     const openAlexP = (async () => {
       if (!sources.openalex) return null
-      if (keywordsEn.length === 0) keywordsEn = englishKeywords(keywords, (await kciP) ?? [])
+      if (keywordsEn.length === 0) keywordsEn = englishKeywords(keywords, (await kciP) ?? [], units)
       // 영문 검색어가 없으면 한국어 키워드로 검색한다 (OpenAlex에도 한국어 논문이 일부 있다)
       const enQuery = keywordsEn.length > 0 ? keywordsEn.join(' ') : koQuery
       // 중계 함수가 없으면 직접 호출만
@@ -263,7 +320,7 @@ export function createEngine(opts: EngineOptions) {
                   return viaRelay()
                 }
               }
-      return attempt('openalex', () => cached(`cache:openalex:${enQuery}:${fromYear}`, config.ttl.paperCacheMs, load))
+      return attempt('openalex', () => cached(`cache:${cacheNs}:openalex:${enQuery}:${fromYear}`, config.ttl.paperCacheMs, load))
     })()
 
     const [kciPapers, newsRaw, openAlexPapers] = await Promise.all([kciP, newsP, openAlexP])

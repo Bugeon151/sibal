@@ -26,6 +26,20 @@ function remove(key: string) {
 const DEVICE_KEY = 'sr.deviceId'
 const RECENT_KEY = 'sr.recent.v2'
 const RECENT_MAX = 10
+const DATA_VERSION_KEY = 'sr.dataVersion'
+/** 저장 데이터 형식·출처가 바뀌면 올린다. 2026-11-09: 데모 → 실제 검색 전환 (데모 캐시의 가짜 논문 제거) */
+export const DATA_VERSION = '2026-11-09-real-search'
+
+/** 이전 버전에서 저장한 기록이면 true (한 번 비워야 함) */
+export function needsDataReset(): boolean {
+  return read(DATA_VERSION_KEY) !== DATA_VERSION
+}
+export function markDataVersion(): void {
+  write(DATA_VERSION_KEY, DATA_VERSION)
+}
+export function clearRecentList(): void {
+  remove(RECENT_KEY)
+}
 
 function randomId(): string {
   if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()

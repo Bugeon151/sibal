@@ -79,10 +79,13 @@ export function scorePapers(
   const docTokens = papers.map((p) => tokenizer.tokens(`${p.title} ${p.abstract}`))
   const bm = new Bm25Index(docTokens)
   // 주제 포함률: 핵심 키워드 중 제목·초록에 나오는 비율. 인용이 많아도 주제가 빠진 논문이 뽑히지 않게 점수에 곱한다
-  const coverage = docTokens.map((tokens) => {
-    if (keywordSets.length === 0) return 1
+  const coverage = docTokens.map((tokens, i) => {
+    // 영어 논문에는 영어 표현이 있는 키워드만 따진다 (영어로 옮길 수 없는 키워드 때문에 모든 논문이 낮게 나오지 않게)
+    const english = !/[가-힣]/.test(papers[i]!.title)
+    const sets = english ? keywordSets.filter((forms) => [...forms].some((f) => /^[a-z]/.test(f))) : keywordSets
+    if (sets.length === 0) return 1
     const set = new Set(tokens)
-    return keywordSets.filter((forms) => [...forms].some((f) => set.has(f))).length / keywordSets.length
+    return sets.filter((forms) => [...forms].some((f) => set.has(f))).length / sets.length
   })
   const kw = normalizeByMax(bm.scoreAll(queryTokens))
   const cites = normalizeByMax(papers.map((p) => Math.log(1 + (p.citedBy ?? 0))))

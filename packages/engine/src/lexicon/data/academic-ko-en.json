@@ -1,39 +1,1211 @@
 {
-  "note": "손으로 만든 교과·학술 기본 한영 대응. 한국어는 토크나이저 결과 형태(파생 접미사 도·율·률·감·력·성 제거 후)로 쓴다.",
-  "koEn": {
-    "가족": ["family"], "가정": ["family", "household", "home"], "감소": ["decrease", "reduction", "decline"],
-    "건강": ["health"], "게임": ["game", "gaming"], "결과": ["result", "outcome"], "경제": ["economy", "economic"],
-    "고용": ["employment"], "공격": ["aggression", "aggressive"], "공기": ["air"], "관계": ["relationship", "association"],
-    "관련": ["associated", "related", "association", "relationship"], "교사": ["teacher"], "교육": ["education", "educational"],
-    "국어": ["korean language"], "기억": ["memory"], "기후": ["climate"], "남학생": ["boys", "male students"],
-    "노인": ["older adults", "elderly"], "뇌": ["brain"], "대기": ["air", "atmosphere"], "대학생": ["college students", "university students"],
-    "독서": ["reading"], "디지털": ["digital"], "또래": ["peer"], "만족": ["satisfaction"], "미디어": ["media"],
-    "배출": ["emission"], "부모": ["parent", "parental"], "불안": ["anxiety"], "불평등": ["inequality"],
-    "비만": ["obesity"], "사용": ["use", "usage"], "사회": ["social", "society"], "상관": ["correlation"],
-    "성별": ["gender", "sex"], "성인": ["adult"], "성장": ["growth"], "성적": ["grade", "academic performance"],
-    "성취": ["achievement"], "소득": ["income"], "수면": ["sleep"], "수업": ["class", "lesson"], "수학": ["mathematics", "math"],
-    "스마트폰": ["smartphone"], "스크린": ["screen"], "스트레스": ["stress"], "시간": ["time", "duration", "hour"],
-    "식사": ["meal", "eating"], "신체": ["physical", "body"], "실험": ["experiment"], "아동": ["child", "children"],
-    "아침": ["morning", "breakfast"], "야간": ["night", "nighttime"], "야외": ["outdoor"], "약물": ["drug", "medication"],
-    "양": ["quantity", "amount"], "어휘": ["vocabulary"], "언어": ["language"], "여학생": ["girls", "female students"],
-    "연구": ["study", "research"], "연령": ["age"], "영양": ["nutrition"], "영향": ["effect", "impact", "influence"],
-    "예방": ["prevention"], "오염": ["pollution", "contamination"], "온도": ["temperature"], "온라인": ["online"],
-    "외로움": ["loneliness"], "요인": ["factor"], "우울": ["depression", "depressive"], "운동": ["exercise", "physical activity"],
-    "위험": ["risk"], "음주": ["alcohol", "drinking"], "의존": ["dependence"], "인지": ["cognitive", "cognition"],
-    "인터넷": ["internet"], "임금": ["wage"], "자존": ["self-esteem"], "장애": ["disorder", "disturbance", "disability"],
-    "전자기기": ["electronic device", "electronic equipment"], "정보": ["information"], "정신": ["mental"],
-    "정책": ["policy"], "중독": ["addiction"], "증가": ["increase"], "증상": ["symptom"], "질": ["quality"],
-    "질환": ["disease", "disorder"], "질병": ["disease", "illness"], "집중": ["attention", "concentration"],
-    "차이": ["difference"], "천식": ["asthma"], "청소년": ["adolescent", "adolescence", "teenager", "youth"],
-    "청년": ["young adult", "youth"], "취침": ["bedtime"], "치료": ["treatment", "therapy"], "친구": ["friend", "peer"],
-    "탄소": ["carbon"], "폭력": ["violence", "violent"], "플라스틱": ["plastic"], "학교": ["school"], "학생": ["student"],
-    "학업": ["academic"], "해양": ["ocean", "marine"], "행동": ["behavior", "behaviour"], "행복": ["happiness", "well-being"],
-    "향상": ["improvement", "improve"], "호흡기": ["respiratory"], "화면": ["screen"], "환경": ["environment", "environmental"],
-    "효과": ["effect", "efficacy"], "흡연": ["smoking"], "개선": ["improvement", "improve"], "악화": ["worsen", "deterioration"],
-    "위험요인": ["risk factor"], "분석": ["analysis"], "조사": ["survey"], "설문": ["questionnaire", "survey"],
-    "참가자": ["participant"], "대상": ["participant", "subject"], "남성": ["male", "men"], "여성": ["female", "women"],
-    "초등학생": ["elementary school students", "primary school students"], "중학생": ["middle school students"],
-    "고등학생": ["high school students"], "과학": ["science"], "영어": ["english"], "읽기": ["reading"], "쓰기": ["writing"],
-    "기기": ["device"], "전자": ["electronic"], "에너지": ["energy"], "기온": ["temperature"], "물가": ["price", "inflation"]
-  }
+ "note": "손으로 만든 교과·학술 기본 한영 대응. 한국어는 토크나이저 결과 형태(파생 접미사 도·율·률·감·력·성 제거 후)로 쓴다.",
+ "koEn": {
+  "가족": [
+   "family"
+  ],
+  "가정": [
+   "family",
+   "household",
+   "home"
+  ],
+  "감소": [
+   "decrease",
+   "reduction",
+   "decline"
+  ],
+  "건강": [
+   "health"
+  ],
+  "게임": [
+   "game",
+   "gaming"
+  ],
+  "결과": [
+   "result",
+   "outcome"
+  ],
+  "경제": [
+   "economy",
+   "economic"
+  ],
+  "고용": [
+   "employment"
+  ],
+  "공격": [
+   "aggression",
+   "aggressive"
+  ],
+  "공기": [
+   "air"
+  ],
+  "관계": [
+   "relationship",
+   "association"
+  ],
+  "관련": [
+   "associated",
+   "related",
+   "association",
+   "relationship"
+  ],
+  "교사": [
+   "teacher"
+  ],
+  "교육": [
+   "education",
+   "educational"
+  ],
+  "국어": [
+   "korean language"
+  ],
+  "기억": [
+   "memory"
+  ],
+  "기후": [
+   "climate"
+  ],
+  "남학생": [
+   "boys",
+   "male students"
+  ],
+  "노인": [
+   "older adults",
+   "elderly"
+  ],
+  "뇌": [
+   "brain"
+  ],
+  "대기": [
+   "air",
+   "atmosphere"
+  ],
+  "대학생": [
+   "college students",
+   "university students"
+  ],
+  "독서": [
+   "reading"
+  ],
+  "디지털": [
+   "digital"
+  ],
+  "또래": [
+   "peer"
+  ],
+  "만족": [
+   "satisfaction"
+  ],
+  "미디어": [
+   "media"
+  ],
+  "배출": [
+   "emission"
+  ],
+  "부모": [
+   "parent",
+   "parental"
+  ],
+  "불안": [
+   "anxiety"
+  ],
+  "불평등": [
+   "inequality"
+  ],
+  "비만": [
+   "obesity"
+  ],
+  "사용": [
+   "use",
+   "usage"
+  ],
+  "사회": [
+   "social",
+   "society"
+  ],
+  "상관": [
+   "correlation"
+  ],
+  "성별": [
+   "gender",
+   "sex"
+  ],
+  "성인": [
+   "adult"
+  ],
+  "성장": [
+   "growth"
+  ],
+  "성적": [
+   "grade",
+   "academic performance"
+  ],
+  "성취": [
+   "achievement"
+  ],
+  "소득": [
+   "income"
+  ],
+  "수면": [
+   "sleep"
+  ],
+  "수업": [
+   "class",
+   "lesson"
+  ],
+  "수학": [
+   "mathematics",
+   "math"
+  ],
+  "스마트폰": [
+   "smartphone"
+  ],
+  "스크린": [
+   "screen"
+  ],
+  "스트레스": [
+   "stress"
+  ],
+  "시간": [
+   "time",
+   "duration",
+   "hour"
+  ],
+  "식사": [
+   "meal",
+   "eating"
+  ],
+  "신체": [
+   "physical",
+   "body"
+  ],
+  "실험": [
+   "experiment"
+  ],
+  "아동": [
+   "child",
+   "children"
+  ],
+  "아침": [
+   "morning",
+   "breakfast"
+  ],
+  "야간": [
+   "night",
+   "nighttime"
+  ],
+  "야외": [
+   "outdoor"
+  ],
+  "약물": [
+   "drug",
+   "medication"
+  ],
+  "양": [
+   "quantity",
+   "amount"
+  ],
+  "어휘": [
+   "vocabulary"
+  ],
+  "언어": [
+   "language"
+  ],
+  "여학생": [
+   "girls",
+   "female students"
+  ],
+  "연구": [
+   "study",
+   "research"
+  ],
+  "연령": [
+   "age"
+  ],
+  "영양": [
+   "nutrition"
+  ],
+  "영향": [
+   "effect",
+   "impact",
+   "influence"
+  ],
+  "예방": [
+   "prevention"
+  ],
+  "오염": [
+   "pollution",
+   "contamination"
+  ],
+  "온도": [
+   "temperature"
+  ],
+  "온라인": [
+   "online"
+  ],
+  "외로움": [
+   "loneliness"
+  ],
+  "요인": [
+   "factor"
+  ],
+  "우울": [
+   "depression",
+   "depressive"
+  ],
+  "운동": [
+   "exercise",
+   "physical activity"
+  ],
+  "위험": [
+   "risk"
+  ],
+  "음주": [
+   "alcohol",
+   "drinking",
+   "alcohol use"
+  ],
+  "의존": [
+   "dependence"
+  ],
+  "인지": [
+   "cognitive",
+   "cognition"
+  ],
+  "인터넷": [
+   "internet"
+  ],
+  "임금": [
+   "wage"
+  ],
+  "자존": [
+   "self-esteem"
+  ],
+  "장애": [
+   "disorder",
+   "disturbance",
+   "disability"
+  ],
+  "전자기기": [
+   "electronic device",
+   "electronic equipment"
+  ],
+  "정보": [
+   "information"
+  ],
+  "정신": [
+   "mental"
+  ],
+  "정책": [
+   "policy"
+  ],
+  "중독": [
+   "addiction"
+  ],
+  "증가": [
+   "increase"
+  ],
+  "증상": [
+   "symptom"
+  ],
+  "질": [
+   "quality"
+  ],
+  "질환": [
+   "disease",
+   "disorder"
+  ],
+  "질병": [
+   "disease",
+   "illness"
+  ],
+  "집중": [
+   "attention",
+   "concentration"
+  ],
+  "차이": [
+   "difference"
+  ],
+  "천식": [
+   "asthma"
+  ],
+  "청소년": [
+   "adolescent",
+   "adolescence",
+   "teenager",
+   "youth"
+  ],
+  "청년": [
+   "young adult",
+   "youth"
+  ],
+  "취침": [
+   "bedtime"
+  ],
+  "치료": [
+   "treatment",
+   "therapy"
+  ],
+  "친구": [
+   "friend",
+   "peer"
+  ],
+  "탄소": [
+   "carbon"
+  ],
+  "폭력": [
+   "violence",
+   "violent"
+  ],
+  "플라스틱": [
+   "plastic"
+  ],
+  "학교": [
+   "school"
+  ],
+  "학생": [
+   "student"
+  ],
+  "학업": [
+   "academic"
+  ],
+  "해양": [
+   "ocean",
+   "marine"
+  ],
+  "행동": [
+   "behavior",
+   "behaviour"
+  ],
+  "행복": [
+   "happiness",
+   "well-being"
+  ],
+  "향상": [
+   "improvement",
+   "improve"
+  ],
+  "호흡기": [
+   "respiratory"
+  ],
+  "화면": [
+   "screen"
+  ],
+  "환경": [
+   "environment",
+   "environmental"
+  ],
+  "효과": [
+   "effect",
+   "efficacy"
+  ],
+  "흡연": [
+   "smoking"
+  ],
+  "개선": [
+   "improvement",
+   "improve"
+  ],
+  "악화": [
+   "worsen",
+   "deterioration"
+  ],
+  "위험요인": [
+   "risk factor"
+  ],
+  "분석": [
+   "analysis"
+  ],
+  "조사": [
+   "survey"
+  ],
+  "설문": [
+   "questionnaire",
+   "survey"
+  ],
+  "참가자": [
+   "participant"
+  ],
+  "대상": [
+   "participant",
+   "subject"
+  ],
+  "남성": [
+   "male",
+   "men"
+  ],
+  "여성": [
+   "female",
+   "women"
+  ],
+  "초등학생": [
+   "elementary school students",
+   "primary school students"
+  ],
+  "중학생": [
+   "middle school students"
+  ],
+  "고등학생": [
+   "high school students"
+  ],
+  "과학": [
+   "science"
+  ],
+  "영어": [
+   "english"
+  ],
+  "읽기": [
+   "reading"
+  ],
+  "쓰기": [
+   "writing"
+  ],
+  "기기": [
+   "device"
+  ],
+  "전자": [
+   "electronic"
+  ],
+  "에너지": [
+   "energy"
+  ],
+  "기온": [
+   "temperature"
+  ],
+  "물가": [
+   "price",
+   "inflation"
+  ],
+  "해수면": [
+   "sea level"
+  ],
+  "상승": [
+   "rise"
+  ],
+  "카페인": [
+   "caffeine"
+  ],
+  "최저임금": [
+   "minimum wage"
+  ],
+  "탄소중립": [
+   "carbon neutrality"
+  ],
+  "일자리": [
+   "job",
+   "employment"
+  ],
+  "실업": [
+   "unemployment"
+  ],
+  "음악": [
+   "music"
+  ],
+  "자존감": [
+   "self-esteem"
+  ],
+  "자아존중감": [
+   "self-esteem"
+  ],
+  "유전자": [
+   "gene",
+   "genetic"
+  ],
+  "편집": [
+   "editing"
+  ],
+  "유전자가위": [
+   "genome editing",
+   "CRISPR"
+  ],
+  "윤리": [
+   "ethics",
+   "ethical"
+  ],
+  "쓰레기": [
+   "waste"
+  ],
+  "생태계": [
+   "ecosystem"
+  ],
+  "멸종": [
+   "extinction"
+  ],
+  "생물다양성": [
+   "biodiversity"
+  ],
+  "온실가스": [
+   "greenhouse gas"
+  ],
+  "이산화탄소": [
+   "carbon dioxide"
+  ],
+  "지구온난화": [
+   "global warming"
+  ],
+  "재생에너지": [
+   "renewable energy"
+  ],
+  "태양광": [
+   "solar power",
+   "photovoltaic"
+  ],
+  "원자력": [
+   "nuclear power"
+  ],
+  "전기차": [
+   "electric vehicle"
+  ],
+  "미세플라스틱": [
+   "microplastic"
+  ],
+  "재활용": [
+   "recycling"
+  ],
+  "분리배출": [
+   "waste separation",
+   "recycling"
+  ],
+  "사막화": [
+   "desertification"
+  ],
+  "산불": [
+   "wildfire"
+  ],
+  "폭염": [
+   "heat wave"
+  ],
+  "홍수": [
+   "flood"
+  ],
+  "가뭄": [
+   "drought"
+  ],
+  "열섬": [
+   "urban heat island"
+  ],
+  "녹지": [
+   "green space"
+  ],
+  "도시": [
+   "urban",
+   "city"
+  ],
+  "농업": [
+   "agriculture"
+  ],
+  "식량": [
+   "food security",
+   "food"
+  ],
+  "물부족": [
+   "water scarcity"
+  ],
+  "백신": [
+   "vaccine",
+   "vaccination"
+  ],
+  "감염병": [
+   "infectious disease"
+  ],
+  "코로나": [
+   "COVID-19"
+  ],
+  "바이러스": [
+   "virus"
+  ],
+  "항생제": [
+   "antibiotic"
+  ],
+  "내성": [
+   "resistance"
+  ],
+  "면역": [
+   "immunity",
+   "immune"
+  ],
+  "암": [
+   "cancer"
+  ],
+  "당뇨": [
+   "diabetes"
+  ],
+  "고혈압": [
+   "hypertension"
+  ],
+  "수명": [
+   "life expectancy",
+   "lifespan"
+  ],
+  "고령화": [
+   "population aging",
+   "aging"
+  ],
+  "저출산": [
+   "low fertility",
+   "fertility decline"
+  ],
+  "출산율": [
+   "fertility rate"
+  ],
+  "인구": [
+   "population"
+  ],
+  "이민": [
+   "immigration"
+  ],
+  "다문화": [
+   "multicultural"
+  ],
+  "차별": [
+   "discrimination"
+  ],
+  "혐오": [
+   "hate",
+   "hate speech"
+  ],
+  "성평등": [
+   "gender equality"
+  ],
+  "젠더": [
+   "gender"
+  ],
+  "인권": [
+   "human rights"
+  ],
+  "민주주의": [
+   "democracy"
+  ],
+  "선거": [
+   "election"
+  ],
+  "투표": [
+   "voting"
+  ],
+  "투표율": [
+   "voter turnout"
+  ],
+  "정치": [
+   "politics",
+   "political"
+  ],
+  "언론": [
+   "media",
+   "press"
+  ],
+  "가짜뉴스": [
+   "fake news",
+   "misinformation"
+  ],
+  "허위정보": [
+   "misinformation",
+   "disinformation"
+  ],
+  "알고리즘": [
+   "algorithm"
+  ],
+  "추천": [
+   "recommendation"
+  ],
+  "유튜브": [
+   "YouTube"
+  ],
+  "숏폼": [
+   "short-form video"
+  ],
+  "메타버스": [
+   "metaverse"
+  ],
+  "가상현실": [
+   "virtual reality"
+  ],
+  "증강현실": [
+   "augmented reality"
+  ],
+  "로봇": [
+   "robot",
+   "robotics"
+  ],
+  "자율주행": [
+   "autonomous driving",
+   "self-driving"
+  ],
+  "빅데이터": [
+   "big data"
+  ],
+  "개인정보": [
+   "privacy",
+   "personal information"
+  ],
+  "사이버": [
+   "cyber"
+  ],
+  "사이버폭력": [
+   "cyberbullying"
+  ],
+  "학교폭력": [
+   "school violence",
+   "bullying"
+  ],
+  "괴롭힘": [
+   "bullying"
+  ],
+  "따돌림": [
+   "bullying",
+   "ostracism"
+  ],
+  "자살": [
+   "suicide"
+  ],
+  "정신건강": [
+   "mental health"
+  ],
+  "행복감": [
+   "happiness"
+  ],
+  "삶의질": [
+   "quality of life"
+  ],
+  "수면부족": [
+   "sleep deprivation"
+  ],
+  "카페": [
+   "cafe"
+  ],
+  "에너지음료": [
+   "energy drink"
+  ],
+  "설탕": [
+   "sugar"
+  ],
+  "식습관": [
+   "eating habits",
+   "diet"
+  ],
+  "아침식사": [
+   "breakfast"
+  ],
+  "패스트푸드": [
+   "fast food"
+  ],
+  "비타민": [
+   "vitamin"
+  ],
+  "운동량": [
+   "physical activity"
+  ],
+  "체력": [
+   "physical fitness"
+  ],
+  "근력": [
+   "muscle strength"
+  ],
+  "걷기": [
+   "walking"
+  ],
+  "스포츠": [
+   "sports"
+  ],
+  "독서량": [
+   "reading"
+  ],
+  "문해력": [
+   "literacy"
+  ],
+  "어휘력": [
+   "vocabulary"
+  ],
+  "작문": [
+   "writing"
+  ],
+  "외국어": [
+   "foreign language"
+  ],
+  "이중언어": [
+   "bilingual"
+  ],
+  "사교육": [
+   "private tutoring",
+   "shadow education"
+  ],
+  "학원": [
+   "private academy",
+   "cram school"
+  ],
+  "숙제": [
+   "homework"
+  ],
+  "시험": [
+   "exam",
+   "test"
+  ],
+  "입시": [
+   "college admission"
+  ],
+  "수능": [
+   "college entrance exam"
+  ],
+  "내신": [
+   "school grades"
+  ],
+  "교과서": [
+   "textbook"
+  ],
+  "원격수업": [
+   "remote learning",
+   "online learning"
+  ],
+  "온라인수업": [
+   "online learning"
+  ],
+  "디지털교과서": [
+   "digital textbook"
+  ],
+  "코딩": [
+   "coding",
+   "programming"
+  ],
+  "창의성": [
+   "creativity"
+  ],
+  "창의력": [
+   "creativity"
+  ],
+  "동기": [
+   "motivation"
+  ],
+  "자기효능감": [
+   "self-efficacy"
+  ],
+  "자기주도": [
+   "self-directed learning"
+  ],
+  "집중력": [
+   "attention",
+   "concentration"
+  ],
+  "기억력": [
+   "memory"
+  ],
+  "인지능력": [
+   "cognitive ability"
+  ],
+  "뇌발달": [
+   "brain development"
+  ],
+  "청력": [
+   "hearing"
+  ],
+  "시력": [
+   "vision",
+   "eyesight"
+  ],
+  "근시": [
+   "myopia"
+  ],
+  "블루라이트": [
+   "blue light"
+  ],
+  "화면시간": [
+   "screen time"
+  ],
+  "스크린타임": [
+   "screen time"
+  ],
+  "휴대폰": [
+   "mobile phone"
+  ],
+  "소셜미디어": [
+   "social media"
+  ],
+  "인스타그램": [
+   "Instagram"
+  ],
+  "틱톡": [
+   "TikTok"
+  ],
+  "외모": [
+   "appearance",
+   "body image"
+  ],
+  "신체이미지": [
+   "body image"
+  ],
+  "다이어트": [
+   "diet",
+   "weight loss"
+  ],
+  "섭식장애": [
+   "eating disorder"
+  ],
+  "전자담배": [
+   "e-cigarette",
+   "vaping"
+  ],
+  "마약": [
+   "drug use"
+  ],
+  "도박": [
+   "gambling"
+  ],
+  "경제성장": [
+   "economic growth"
+  ],
+  "금리": [
+   "interest rate"
+  ],
+  "부동산": [
+   "real estate",
+   "housing"
+  ],
+  "주거": [
+   "housing"
+  ],
+  "빈곤": [
+   "poverty"
+  ],
+  "소득불평등": [
+   "income inequality"
+  ],
+  "복지": [
+   "welfare"
+  ],
+  "기본소득": [
+   "basic income"
+  ],
+  "노동": [
+   "labor"
+  ],
+  "근로시간": [
+   "working hours"
+  ],
+  "플랫폼노동": [
+   "platform work",
+   "gig economy"
+  ],
+  "자영업": [
+   "self-employment"
+  ],
+  "소비": [
+   "consumption"
+  ],
+  "광고": [
+   "advertising"
+  ],
+  "브랜드": [
+   "brand"
+  ],
+  "공정무역": [
+   "fair trade"
+  ],
+  "관광": [
+   "tourism"
+  ],
+  "교통": [
+   "transportation"
+  ],
+  "대중교통": [
+   "public transportation"
+  ],
+  "자전거": [
+   "bicycle",
+   "cycling"
+  ],
+  "우주": [
+   "space",
+   "outer space"
+  ],
+  "우주탐사": [
+   "space exploration"
+  ],
+  "행성": [
+   "planet"
+  ],
+  "화성": [
+   "Mars"
+  ],
+  "지진": [
+   "earthquake"
+  ],
+  "화산": [
+   "volcano"
+  ],
+  "반도체": [
+   "semiconductor"
+  ],
+  "배터리": [
+   "battery"
+  ],
+  "수소": [
+   "hydrogen"
+  ],
+  "신소재": [
+   "advanced materials"
+  ],
+  "나노": [
+   "nanotechnology"
+  ],
+  "3D프린팅": [
+   "3D printing"
+  ],
+  "줄기세포": [
+   "stem cell"
+  ],
+  "장내미생물": [
+   "gut microbiome"
+  ],
+  "미생물": [
+   "microorganism",
+   "microbiome"
+  ],
+  "동물실험": [
+   "animal testing"
+  ],
+  "동물권": [
+   "animal rights"
+  ],
+  "반려동물": [
+   "pet",
+   "companion animal"
+  ],
+  "채식": [
+   "vegetarian",
+   "plant-based diet"
+  ],
+  "대체육": [
+   "meat substitute",
+   "alternative protein"
+  ],
+  "배양육": [
+   "cultured meat"
+  ],
+  "유전자변형": [
+   "genetically modified"
+  ],
+  "식품첨가물": [
+   "food additive"
+  ],
+  "원조": [
+   "foreign aid"
+  ],
+  "전쟁": [
+   "war"
+  ],
+  "난민": [
+   "refugee"
+  ],
+  "평화": [
+   "peace"
+  ],
+  "문학": [
+   "literature"
+  ],
+  "역사": [
+   "history"
+  ],
+  "철학": [
+   "philosophy"
+  ],
+  "예술": [
+   "art"
+  ],
+  "영화": [
+   "film",
+   "movie"
+  ],
+  "드라마": [
+   "television drama"
+  ],
+  "웹툰": [
+   "webtoon"
+  ],
+  "케이팝": [
+   "K-pop"
+  ],
+  "한류": [
+   "Korean Wave"
+  ],
+  "번역": [
+   "translation"
+  ],
+  "표준어": [
+   "standard language"
+  ],
+  "방언": [
+   "dialect"
+  ],
+  "신조어": [
+   "neologism"
+  ],
+  "맞춤법": [
+   "spelling"
+  ],
+  "인상": [
+   "increase",
+   "raise"
+  ],
+  "섭취": [
+   "intake",
+   "consumption"
+  ],
+  "인하": [
+   "reduction",
+   "cut"
+  ],
+  "도입": [
+   "introduction",
+   "adoption"
+  ],
+  "규제": [
+   "regulation"
+  ],
+  "지원": [
+   "support"
+  ],
+  "효율": [
+   "efficiency"
+  ],
+  "위험성": [
+   "risk"
+  ],
+  "안전": [
+   "safety"
+  ],
+  "사고": [
+   "accident"
+  ],
+  "오염물질": [
+   "pollutant"
+  ],
+  "수질": [
+   "water quality"
+  ],
+  "토양": [
+   "soil"
+  ],
+  "대기오염": [
+   "air pollution"
+  ],
+  "소음": [
+   "noise"
+  ],
+  "빛공해": [
+   "light pollution"
+  ],
+  "층간소음": [
+   "noise"
+  ],
+  "주의력": [
+   "attention"
+  ],
+  "학습": [
+   "learning"
+  ],
+  "성취도": [
+   "achievement"
+  ],
+  "청소년기": [
+   "adolescence"
+  ]
+ }
 }

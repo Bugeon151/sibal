@@ -14,7 +14,8 @@ export interface Tokenizer {
 const KO_PREDICATE =
   /^(.{2,}?)(할수록|될수록|일수록|하자|되자|일\s?때는|일\s?때|하였으며|하였으나|하였다|하였고|했으며|했으나|했다|했고|한다|하는|하고|하여|해서|하며|하면|하기|하지|함|할|한|되었으며|되었다|되었고|됐다|된다|되는|되고|되며|되어|되지|됨|될|된|시켰다|시킨다|시키는|시키고|시켜)$/
 const KO_ADJ_JEOK = /^(.{2,}적)(인|으로|이다|이며|이고|이었다)$/
-const KO_COPULA = /^(.{2,}?)(이었다|였다|이다|이며|이고|이라는|이라고|이라|입니다|인)$/
+// '인'은 앞이 3글자 이상일 때만 뗀다 (카페인·디자인·와인처럼 '인'으로 끝나는 외래어 보호)
+const KO_COPULA = /^(?:(.{2,}?)(이었다|였다|이다|이며|이고|이라는|이라고|이라|입니다)|(.{3,}?)(인))$/
 
 // 조사 (긴 것부터)
 const KO_JOSA = [
@@ -65,7 +66,7 @@ function stemKorean(word: string): string {
   if (m) w = m[1]!
   else {
     m = KO_COPULA.exec(w)
-    if (m && !KO_KEEP.has(w)) w = m[1]!
+    if (m && !KO_KEEP.has(w)) w = (m[1] ?? m[3])!
   }
   if (KO_KEEP.has(w)) return w
   for (const j of KO_JOSA) {
