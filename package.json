@@ -12,6 +12,7 @@
     "typecheck": "tsc -p packages/engine --noEmit && tsc -p packages/relay --noEmit"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@types/node": "^22.20.5",
     "tsx": "^4.23.15",
     "typescript": "^5.9.0",

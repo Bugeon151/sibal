@@ -49,6 +49,17 @@ describe('F5 비교표', () => {
     expect(conceptDirection('취침 전 스마트폰 사용은 수면의 질을 낮추는 것으로 나타났다.', is('질'), tk)).toBe('decrease')
   })
 
+  it('영어: 주어는 목적어의 방향을 가져가지 않고, 바로 앞 수식어·바로 뒤 서술어만 본다', () => {
+    const tk2 = tk
+    const is = (w: string) => (t: string) => t === w
+    const s1 = 'Excessive smartphone use increased anxiety among teenagers.'
+    expect(conceptDirection(s1, is('smartphon'), tk2)).toBe('none')
+    expect(conceptDirection('Heavy users reported reduced sleep duration.', is('sleep'), tk2)).toBe('decrease')
+    expect(conceptDirection('In this group, sleep quality decreased significantly.', is('sleep'), tk2)).toBe('decrease')
+    expect(conceptDirection('Sleep duration was not associated with screen time.', is('sleep'), tk2)).toBe('no_effect')
+    expect(conceptDirection('There is a negative relationship between the use of smartphones, and sleep, for reducing quality.', is('smartphon'), tk2)).toBe('none')
+  })
+
   it('agreementOf', () => {
     expect(agreementOf(['increase', 'increase'])).toBe('agree')
     expect(agreementOf(['increase', 'decrease'])).toBe('conflict')

@@ -44,9 +44,21 @@ export function reconstructAbstract(index: Record<string, number[]> | null | und
   return words.filter((w) => w !== undefined).join(' ')
 }
 
+/**
+ * 바로 열 수 없는 것으로 알려진 원문 주소는 고친다 (2026-11-09 실제 링크 검증에서 확인).
+ * - ScienceDirect의 '/pdf'는 로그인·스크립트가 있어야 열려서, 논문 페이지로 바꾼다.
+ * - SSRN 다운로드 주소는 접근 차단 페이지가 나와서 원문 링크를 두지 않는다.
+ */
+export function fixFullTextUrl(url: string | null): string | null {
+  if (!url) return null
+  if (/^https?:\/\/(www\.)?sciencedirect\.com\/science\/article\/pii\/[^/]+\/pdf/.test(url)) return url.replace(/\/pdf(ft)?(\?.*)?$/, '')
+  if (/papers\.ssrn\.com\/sol3\/Delivery\.cfm/i.test(url)) return null
+  return url
+}
+
 function links(w: OpenAlexWork, doi: string | null): Pick<RawPaper, 'url' | 'pageUrl' | 'fullTextUrl'> {
   const pageUrl = doi ? `https://doi.org/${doi}` : (w.primary_location?.landing_page_url ?? w.id)
-  const fullTextUrl = w.open_access?.oa_url ?? null
+  const fullTextUrl = fixFullTextUrl(w.open_access?.oa_url ?? null)
   return { url: fullTextUrl ?? pageUrl, pageUrl, fullTextUrl }
 }
 

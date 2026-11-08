@@ -4,6 +4,7 @@ import { dedupePapers } from '../src/features/select'
 import { kstDate, newsReference } from '../src/features/templates'
 import { headingRole } from '../src/lexicon/roles'
 import { parseKciXml } from '../src/sources/kci'
+import { fixFullTextUrl } from '../src/sources/openalex'
 import type { RawPaper } from '../src/sources/types'
 
 const paper = (o: Partial<RawPaper>): RawPaper => ({
@@ -66,5 +67,11 @@ describe('리뷰 수정', () => {
     expect(headingRole('(3) Results: x')).toBe('result')
     expect(headingRole('RESULTS: x')).toBe('result')
     expect(headingRole('결과: x')).toBe('result')
+  })
+
+  it('바로 열리지 않는 원문 주소를 고친다', () => {
+    expect(fixFullTextUrl('https://www.sciencedirect.com/science/article/pii/S0001691822001445/pdf')).toBe('https://www.sciencedirect.com/science/article/pii/S0001691822001445')
+    expect(fixFullTextUrl('https://papers.ssrn.com/sol3/Delivery.cfm?abstractid=1')).toBeNull()
+    expect(fixFullTextUrl('https://link.springer.com/content/pdf/10.1186/x.pdf')).toBe('https://link.springer.com/content/pdf/10.1186/x.pdf')
   })
 })

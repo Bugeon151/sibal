@@ -9,3 +9,7 @@ frontend/dist/
 frontend/dev-dist/
 .env
 .env.local
+
+e2e/report/
+test-results/
+playwright-report/

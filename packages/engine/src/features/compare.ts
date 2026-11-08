@@ -19,6 +19,13 @@ export type CompareDoc = {
 
 const WINDOW_AFTER = 4
 const WINDOW_BEFORE_EN = 3
+// 개념 바로 뒤에 오는 서술어 (복합명사 한 단어 "sleep quality", 조동사·부정·부사 허용)
+const EN_PREDICATE =
+  /^[,)]?\s*(?:(?:quality|duration|time|level|levels|score|scores|rate|rates|use|usage)\s+)?(?:(?:was|were|is|are|has|have|had|been|did|does|do|significantly|slightly|markedly|also)\s+){0,3}(?:not\s+)?(?:(?:significantly|slightly|markedly)\s+)?(?:increas|decreas|reduc|declin|improv|rose|fell|worsen|drop|lower|higher|associated|correlated|related|affected|changed|differ)/i
+// 동사 뒤에 와도 목적어가 아닌 말 (부사·전치사·접속사)
+const EN_AFTER_VERB_OK = new Set(['significantly', 'slightly', 'markedly', 'substantially', 'sharply', 'over', 'in', 'among', 'for', 'with', 'by', 'during', 'after', 'when', 'than', 'compared', 'as', 'and', 'but', 'from', 'to', 'at', 'across', 'between', 'within', 'only', 'more', 'less', 'over'])
+// 비교할 거리가 못 되는 일반어
+const GENERIC_CONCEPTS = new Set(['사용', '이용', '활용', '질', '정도', '수준', '방법', '요인', '연구', '결과', '대상', '집단', '시간'])
 
 /** 문장 안에서 개념 바로 뒤(영어는 앞 3단어 포함)의 방향. 개념이 없거나 가까운 단서어가 없으면 none */
 export function conceptDirection(text: string, isConcept: (token: string) => boolean, tokenizer: Tokenizer): Direction {
@@ -31,9 +38,26 @@ export function conceptDirection(text: string, isConcept: (token: string) => boo
     const en = !/[가-힣]/.test(scope)
     words.forEach((w, i) => {
       if (!tokenizer.tokens(w).some(isConcept)) return
-      const from = en ? Math.max(0, i - WINDOW_BEFORE_EN) : i
-      const windowWords = words.slice(from, i + 1 + WINDOW_AFTER)
-      if (!en) {
+      if (en) {
+        // 영어(주어-동사-목적어): 바로 앞 수식어("reduced sleep")나 바로 뒤 서술어("sleep decreased", "was not associated")만 본다.
+        // 뒤에 목적어가 오는 동사("use increased anxiety")의 방향은 주어 개념에 주지 않는다.
+        const before = words.slice(Math.max(0, i - WINDOW_BEFORE_EN), i).join(' ')
+        const after = words.slice(i + 1, i + 1 + WINDOW_AFTER).join(' ')
+        const db = detectDirection(before)
+        if (db === 'increase' || db === 'decrease') dirs.push(db)
+        const pm = EN_PREDICATE.exec(after)
+        if (pm) {
+          // 동사 바로 뒤에 목적어(명사)가 오면 타동사("use increased anxiety") → 바뀌는 것은 목적어이므로 건너뛴다
+          const rest = after.slice(pm[0].length).replace(/^[a-z]*/i, '').trim()
+          const next = rest.split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '') ?? ''
+          const intransitive = !next || EN_AFTER_VERB_OK.has(next) || /[.,;:)]/.test(rest.charAt(0))
+          const da = detectDirection(after)
+          if (intransitive && da !== 'none') dirs.push(da)
+        }
+        return
+      }
+      const windowWords = words.slice(i, i + 1 + WINDOW_AFTER)
+      {
         // 개념과 방향어 사이에 목적어(~을/를)가 있으면 바뀌는 것은 그 목적어다 ("사용은 수면의 질을 낮추는")
         const after = words.slice(i + 1, i + 1 + WINDOW_AFTER)
         const cueAt = after.findIndex((_x, k) => detectDirection(after.slice(k).join(' ')) !== 'none' && detectDirection(after.slice(k + 1).join(' ')) === 'none')
@@ -52,7 +76,8 @@ export function buildComparison(docs: CompareDoc[], dict: Dictionary, tokenizer:
 
   const canon = (t: string) => dict.canonical(t)
   const usable = (t: string) => !/^\d/.test(t) && t.length >= 2 && !TOPIC_STOP.has(t) && detectDirection(t) === 'none'
-  const docConcepts = docs.map((d) => d.tokens.flat().filter(usable).map(canon).filter((t) => !TOPIC_STOP.has(t)))
+  const notGeneric = (t: string) => !TOPIC_STOP.has(t) && !GENERIC_CONCEPTS.has(t)
+  const docConcepts = docs.map((d) => d.tokens.flat().filter(usable).map(canon).filter(notGeneric))
   const idf = idfTable(docConcepts)
   const weight = new Map<string, number>()
   const presentIn = new Map<string, number>()
