@@ -44,6 +44,12 @@ export function reconstructAbstract(index: Record<string, number[]> | null | und
   return words.filter((w) => w !== undefined).join(' ')
 }
 
+function links(w: OpenAlexWork, doi: string | null): Pick<RawPaper, 'url' | 'pageUrl' | 'fullTextUrl'> {
+  const pageUrl = doi ? `https://doi.org/${doi}` : (w.primary_location?.landing_page_url ?? w.id)
+  const fullTextUrl = w.open_access?.oa_url ?? null
+  return { url: fullTextUrl ?? pageUrl, pageUrl, fullTextUrl }
+}
+
 export function parseOpenAlexWork(w: OpenAlexWork): RawPaper | null {
   if (!w.title || !w.publication_year) return null
   if (w.type && !ALLOWED_TYPES.has(w.type)) return null
@@ -60,7 +66,7 @@ export function parseOpenAlexWork(w: OpenAlexWork): RawPaper | null {
     language: w.language === 'ko' ? 'ko' : w.language === 'en' ? 'en' : detectLang(abstract || w.title),
     citedBy: w.cited_by_count ?? null,
     isOa: w.open_access?.is_oa ?? false,
-    url: w.open_access?.oa_url ?? (doi ? `https://doi.org/${doi}` : (w.primary_location?.landing_page_url ?? w.id)),
+    ...links(w, doi),
     abstract,
     keywordsKo: [],
     keywordsEn: [],

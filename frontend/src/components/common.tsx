@@ -63,7 +63,7 @@ export function CopyButton({ text, label = '복사하기', block }: { text: stri
   }
 
   return (
-    <button type="button" className={`btn primary ${block ? 'block' : ''}`} onClick={onClick} disabled={!text}>
+    <button type="button" className={`btn primary ${block ? 'wide' : ''}`} onClick={onClick} disabled={!text}>
       {state === 'done' ? '복사했어요' : state === 'fail' ? '복사가 안 돼요. 길게 눌러 직접 복사해 주세요' : label}
     </button>
   )

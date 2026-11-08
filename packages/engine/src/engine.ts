@@ -41,8 +41,11 @@ import type {
 } from './types'
 
 export type EngineOptions = {
-  /** 키 중계 함수 주소 (예: https://relay.example.com/) */
-  relayBaseUrl: string
+  /**
+   * 키 중계 함수 주소 (예: https://relay.example.com/).
+   * 없으면(null) 키가 필요한 KCI·뉴스는 건너뛰고(skipped), OpenAlex만 브라우저에서 직접 검색한다.
+   */
+  relayBaseUrl?: string | null
   fetch?: Fetcher
   store?: KeyValueStore
   tokenizer?: Tokenizer
@@ -81,6 +84,7 @@ export function createEngine(opts: EngineOptions) {
   const dict = opts.dictionary ?? new Dictionary()
   const now = opts.now ?? (() => new Date())
   const uuid = opts.uuid ?? (() => crypto.randomUUID())
+  const relay = opts.relayBaseUrl?.trim() || null
   const relayHeaders = { 'X-Device-Id': opts.deviceId ?? uuid() }
 
   // ── 입력 검증 ──
@@ -123,8 +127,19 @@ export function createEngine(opts: EngineOptions) {
     return { value, cached: false }
   }
 
+  // 검색어로 쓰기엔 너무 일반적인 키워드 (영문 검색어에서 뺀다)
+  const GENERIC_KO = new Set(['사용', '이용', '활용', '활동', '정도', '수준', '방법', '요인'])
+
   function englishKeywords(keywords: string[], kciPapers: RawPaper[]): string[] {
-    const fromDict = keywords.flatMap((k) => keyOf(k).flatMap((t) => dict.englishPhrases(t)))
+    // 한국어 키워드마다 대표 영어 1개를 먼저, 남는 자리는 두 번째 표현으로 채운다
+    // (한 키워드의 여러 표현이 자리를 다 차지해 '수면' 같은 핵심어가 빠지지 않게)
+    const perKeyword = keywords
+      .flatMap((k) => keyOf(k))
+      .filter((t) => !GENERIC_KO.has(t))
+      .map((t) => dict.englishPhrases(t))
+      .filter((list) => list.length > 0)
+    const fromDict: string[] = []
+    for (let round = 0; round < 2; round++) for (const list of perKeyword) if (list[round]) fromDict.push(list[round]!)
     // KCI 한·영 키워드 쌍에서 우리 키워드와 짝지어진 영어 키워드를 빈도순으로
     const ours = new Set(keywords.flatMap((k) => tokenizer.tokens(k)))
     const freq = new Map<string, number>()
@@ -159,6 +174,8 @@ export function createEngine(opts: EngineOptions) {
       citedBy: p.citedBy,
       isOa: p.isOa,
       url: p.url,
+      pageUrl: p.pageUrl,
+      fullTextUrl: p.fullTextUrl,
       score: p.score,
       selectReasons: p.selectReasons,
       sentences,
@@ -210,15 +227,15 @@ export function createEngine(opts: EngineOptions) {
 
     // KCI는 제목 검색이라 키워드를 다 넣으면 0건일 수 있다 → 0건이면 앞의 핵심 키워드 2개로 한 번 더
     const kciSearch = async () => {
-      const first = await searchKci(fetcher, opts.relayBaseUrl, { query: koQuery, fromYear }, relayHeaders)
+      const first = await searchKci(fetcher, relay!, { query: koQuery, fromYear }, relayHeaders)
       if (first.length > 0 || keywords.length <= 2) return first
-      return searchKci(fetcher, opts.relayBaseUrl, { query: keywords.slice(0, 2).join(' '), fromYear }, relayHeaders)
+      return searchKci(fetcher, relay!, { query: keywords.slice(0, 2).join(' '), fromYear }, relayHeaders)
     }
-    const kciP = sources.kci
+    const kciP = sources.kci && relay
       ? attempt('kci', () => cached(`cache:kci:${koQuery}:${fromYear}`, config.ttl.paperCacheMs, kciSearch))
       : Promise.resolve(null)
-    const newsP = sources.news
-      ? attempt('news', () => cached(`cache:news:${koQuery}`, config.ttl.newsCacheMs, () => searchNews(fetcher, opts.relayBaseUrl, { query: koQuery }, relayHeaders)))
+    const newsP = sources.news && relay
+      ? attempt('news', () => cached(`cache:news:${koQuery}`, config.ttl.newsCacheMs, () => searchNews(fetcher, relay, { query: koQuery }, relayHeaders)))
       : Promise.resolve(null)
 
     // 영문 검색어: 학생 입력 → 사전 → (없으면) KCI 한·영 키워드
@@ -226,10 +243,11 @@ export function createEngine(opts: EngineOptions) {
     const openAlexP = (async () => {
       if (!sources.openalex) return null
       if (keywordsEn.length === 0) keywordsEn = englishKeywords(keywords, (await kciP) ?? [])
-      if (keywordsEn.length === 0) return null // 영문 검색어가 없으면 skipped로 둔다
-      const enQuery = keywordsEn.join(' ')
-      const route = opts.openAlexRoute ?? 'auto'
-      const viaRelay = () => searchOpenAlex(fetcher, { query: enQuery, fromYear, relayBase: opts.relayBaseUrl }, relayHeaders)
+      // 영문 검색어가 없으면 한국어 키워드로 검색한다 (OpenAlex에도 한국어 논문이 일부 있다)
+      const enQuery = keywordsEn.length > 0 ? keywordsEn.join(' ') : koQuery
+      // 중계 함수가 없으면 직접 호출만
+      const route = relay ? (opts.openAlexRoute ?? 'auto') : 'direct'
+      const viaRelay = () => searchOpenAlex(fetcher, { query: enQuery, fromYear, relayBase: relay! }, relayHeaders)
       const direct = () => searchOpenAlex(fetcher, { query: enQuery, fromYear })
       const load =
         route === 'relay'
@@ -260,7 +278,10 @@ export function createEngine(opts: EngineOptions) {
     // 논문: 중복 제거 → 점수 → 선별 → 조립
     const rawPapers = dedupePapers([...(kciPapers ?? []), ...(openAlexPapers ?? [])])
     const sentenceCount = (p: RawPaper) => splitSentences(p.abstract).length
-    const scored = scorePapers(rawPapers, queryTokens.flatMap((q) => [...dict.expand(q)]), tokenizer, sentenceCount, nowYear)
+    const keywordSets = uniqueTokens(keywords.flatMap((k) => tokenizer.tokens(k)))
+      .filter((t) => !GENERIC_KO.has(t))
+      .map((t) => dict.expand(t))
+    const scored = scorePapers(rawPapers, queryTokens.flatMap((q) => [...dict.expand(q)]), tokenizer, sentenceCount, nowYear, keywordSets)
     const { selected, pool } = selectPapers(scored)
     const papers = selected.map((p, i) => buildPaper(p, `P${i + 1}`, queryTokens))
 
@@ -301,6 +322,8 @@ export function createEngine(opts: EngineOptions) {
         journal: p.journal,
         year: p.year,
         url: p.url,
+      pageUrl: p.pageUrl,
+      fullTextUrl: p.fullTextUrl,
         doi: p.doi,
         text: `${p.title} ${p.abstract}`,
       })),

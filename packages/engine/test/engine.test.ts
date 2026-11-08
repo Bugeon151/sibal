@@ -273,3 +273,46 @@ describe('OpenAlex 경로 (무료 공개용)', () => {
     expect(calls.filter((u) => u.startsWith('https://api.openalex.org')).length).toBe(n * 2)
   })
 })
+
+describe('중계 함수 없이 (키 받기 전 실제 검색)', () => {
+  it('KCI·뉴스는 건너뛰고 OpenAlex만 브라우저에서 직접 검색한다', async () => {
+    const calls: string[] = []
+    const e = createEngine({
+      relayBaseUrl: null,
+      store: new MemoryStore(),
+      now: () => NOW,
+      fetch: async (input: string) => {
+        calls.push(input)
+        return Response.json(OPENALEX_JSON)
+      },
+    })
+    const r = await e.runResearch(baseInput)
+    expect(r.sourceStatus).toEqual({ kci: 'skipped', openalex: 'ok', news: 'skipped' })
+    expect(calls.every((u) => u.startsWith('https://api.openalex.org/works'))).toBe(true)
+    expect(r.papers.length).toBeGreaterThan(0)
+    expect(r.news).toEqual([])
+  })
+
+  it('영문 검색어가 없으면 한국어 키워드로 OpenAlex를 검색한다', async () => {
+    const calls: string[] = []
+    const e = createEngine({ relayBaseUrl: null, store: new MemoryStore(), now: () => NOW, fetch: async (u: string) => (calls.push(u), Response.json(OPENALEX_JSON)) })
+    await e.runResearch({ ...baseInput, keywords: ['탐구주제어'], question: '탐구주제어는 무엇인가?' })
+    expect(decodeURIComponent(calls[0]!)).toContain('search=탐구주제어')
+  })
+})
+
+describe('논문 링크', () => {
+  it('OpenAlex: 논문 페이지는 DOI, 원문은 무료 원문 주소', async () => {
+    const r = await makeEngine().runResearch(baseInput)
+    const oa = r.papers.find((p) => p.source === 'openalex')!
+    expect(oa.pageUrl).toBe('https://doi.org/10.2000/oa.1')
+    expect(oa.fullTextUrl).toBe('https://example.org/oa1.pdf')
+  })
+  it('KCI: 논문 페이지는 KCI 상세 페이지, 원문 링크 없음', async () => {
+    const r = await makeEngine().runResearch(baseInput)
+    const kci = r.papers.find((p) => p.source === 'kci')!
+    expect(kci.pageUrl).toContain('kci.go.kr')
+    expect(kci.pageUrl).toContain(kci.sourceId)
+    expect(kci.fullTextUrl).toBeNull()
+  })
+})

@@ -131,7 +131,7 @@ export function DisclosureTab({ researchId, ensurePackage, onExpired }: Props) {
             ))}
           </ul>
         )}
-        <button type="button" className="btn primary block" onClick={submit} disabled={!canSubmit}>
+        <button type="button" className="btn primary wide" onClick={submit} disabled={!canSubmit}>
           사용 내역 만들기
         </button>
       </section>

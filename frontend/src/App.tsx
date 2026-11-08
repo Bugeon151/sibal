@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Mode, RunResearchOutput, SuggestQuestionsOutput } from '@suhaengcut/engine'
 import { BusyOverlay } from './components/common'
-import { engine, isDemo, toUiError, type UiError } from './engine/client'
+import { engine, isDemo, scope, toUiError, type UiError } from './engine/client'
 import { addRecent, clearRecent, type RecentItem } from './lib/storage'
 import { QuestionScreen } from './screens/QuestionScreen'
 import { ResultScreen } from './screens/ResultScreen'
@@ -81,12 +81,17 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go({ kind: 'start' })}>
-          <img src="/icon.svg" alt="" width={24} height={24} />
+          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width={24} height={24} />
           수행평가 리서치
         </button>
         {isDemo && (
-          <span className="demo-flag" title="VITE_RELAY_URL이 없어 엔진 테스트용 예시 자료로 동작 중">
+          <span className="demo-flag" title="개발용 데모 모드: 엔진 테스트용 예시 자료로 동작 중">
             데모 · 예시 자료
+          </span>
+        )}
+        {scope === 'openalex' && (
+          <span className="demo-flag" title="국내 논문과 뉴스 검색은 준비 중이에요">
+            지금은 해외 논문만 검색돼요
           </span>
         )}
       </header>

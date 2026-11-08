@@ -26,7 +26,15 @@ export function PaperCard({ paper }: { paper: Paper }) {
         {paper.isOa && <span className="pill oa">원문 무료</span>}
         <span className="score">{Math.round(paper.score)}점</span>
       </div>
-      <h3 className="card-title">{paper.title}</h3>
+      <h3 className="card-title">
+        {paper.pageUrl ? (
+          <a href={paper.pageUrl} target="_blank" rel="noopener noreferrer" className="title-link">
+            {paper.title}
+          </a>
+        ) : (
+          paper.title
+        )}
+      </h3>
       <p className="meta">
         {authors}
         {paper.journal && <> · {paper.journal}</>} · {paper.year}
@@ -43,9 +51,14 @@ export function PaperCard({ paper }: { paper: Paper }) {
         <button type="button" className="btn sm ghost" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
           {open ? '초록 접기' : '초록 보기'}
         </button>
-        {paper.url && (
-          <a className="btn sm ghost" href={paper.url} target="_blank" rel="noopener noreferrer">
-            {paper.isOa ? '원문 보기' : '논문 페이지'} ↗
+        {paper.pageUrl && (
+          <a className="btn sm" href={paper.pageUrl} target="_blank" rel="noopener noreferrer">
+            논문 보기 ↗
+          </a>
+        )}
+        {paper.fullTextUrl && paper.fullTextUrl !== paper.pageUrl && (
+          <a className="btn sm ghost" href={paper.fullTextUrl} target="_blank" rel="noopener noreferrer">
+            원문 PDF ↗
           </a>
         )}
       </div>
@@ -64,7 +77,15 @@ export function NewsCard({ news }: { news: News }) {
         <span className="pill news">뉴스</span>
         <span className="meta">{[news.press, dateText].filter(Boolean).join(' · ')}</span>
       </div>
-      <h3 className="card-title">{news.title}</h3>
+      <h3 className="card-title">
+        {news.url ? (
+          <a href={news.url} target="_blank" rel="noopener noreferrer" className="title-link">
+            {news.title}
+          </a>
+        ) : (
+          news.title
+        )}
+      </h3>
       {news.sentences.length > 0 && <p className="news-desc">{news.sentences.map((s) => s.text).join(' ')}</p>}
       {news.url && (
         <div className="card-actions">

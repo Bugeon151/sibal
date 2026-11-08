@@ -22,9 +22,10 @@ function reply(msg: ReplyMessage) {
 self.onmessage = async (e: MessageEvent<InitMessage | CallMessage>) => {
   const msg = e.data
   if (msg.type === 'init') {
-    const demo = msg.relayBaseUrl === null
+    const demo = msg.demo
     engine = createEngine({
-      relayBaseUrl: demo ? DEMO_RELAY : msg.relayBaseUrl!,
+      // 중계 함수가 없으면 null → 엔진이 KCI·뉴스는 건너뛰고 OpenAlex만 브라우저에서 직접 검색
+      relayBaseUrl: demo ? DEMO_RELAY : msg.relayBaseUrl,
       fetch: demo ? demoFetch : undefined,
       deviceId: msg.deviceId,
       // 기본 'auto': OpenAlex는 브라우저에서 키 없이 직접 → 막히면 중계 함수로 (VITE_OPENALEX_DIRECT=true면 직접만)

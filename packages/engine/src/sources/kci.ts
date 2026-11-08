@@ -147,10 +147,14 @@ export function parseKciXml(xml: string): { papers: RawPaper[]; total: number | 
     const openFlag = texts(deepPick(r, FIELD_CANDIDATES.openAccess))[0]?.trim().toUpperCase()
     const cites = Number(texts(deepPick(r, FIELD_CANDIDATES.citations))[0])
 
+    const doi = normalizeDoi(texts(deepPick(r, FIELD_CANDIDATES.doi))[0])
+    // 논문 페이지: KCI 상세 페이지 → DOI → 응답의 URL
+    const kciPage = id ? `https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=${encodeURIComponent(id)}` : ''
+    const pageUrl = kciPage || (doi ? `https://doi.org/${doi}` : (url ?? ''))
     papers.push({
       source: 'kci',
       sourceId: id || title,
-      doi: normalizeDoi(texts(deepPick(r, FIELD_CANDIDATES.doi))[0]),
+      doi,
       title,
       authors: authorNames(deepPick(r, FIELD_CANDIDATES.author)),
       journal: texts(deepPick(r, FIELD_CANDIDATES.journal))[0]?.trim() ?? null,
@@ -158,7 +162,9 @@ export function parseKciXml(xml: string): { papers: RawPaper[]; total: number | 
       language: detectLang(abstract || title),
       citedBy: Number.isFinite(cites) ? cites : null,
       isOa: openFlag === 'Y' || openFlag === 'TRUE',
-      url: url || (id ? `https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=${encodeURIComponent(id)}` : ''),
+      url: pageUrl,
+      pageUrl,
+      fullTextUrl: null,
       abstract,
       keywordsKo: keywords.filter((k) => detectLang(k) === 'ko'),
       keywordsEn: keywords.filter((k) => detectLang(k) === 'en'),

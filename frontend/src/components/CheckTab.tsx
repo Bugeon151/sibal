@@ -77,7 +77,7 @@ export function CheckTab({ researchId, papers, lookup, onExpired }: Props) {
           {tooLong && <p className="field-error">{LIMITS.checkText.toLocaleString()}자까지 검사할 수 있어요. 나눠서 넣어 주세요.</p>}
           <p className="hint">🔒 내 문장은 이 기기 밖으로 나가지 않아요. 한 번에 {LIMITS.checkSentences}문장까지 검사해요.</p>
         </div>
-        <button type="button" className="btn primary block" onClick={submit} disabled={!canSubmit}>
+        <button type="button" className="btn primary wide" onClick={submit} disabled={!canSubmit}>
           근거 확인하기
         </button>
       </section>
@@ -132,8 +132,8 @@ export function CheckTab({ researchId, papers, lookup, onExpired }: Props) {
                           if (!c) return null
                           return (
                             <li key={id}>
-                              {c.url ? (
-                                <a href={c.url} target="_blank" rel="noopener noreferrer">
+                              {c.pageUrl ? (
+                                <a href={c.pageUrl} target="_blank" rel="noopener noreferrer">
                                   {c.title} ↗
                                 </a>
                               ) : (

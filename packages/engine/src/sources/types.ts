@@ -13,7 +13,12 @@ export type RawPaper = {
   language: Lang
   citedBy: number | null
   isOa: boolean
+  /** 하위 호환: fullTextUrl ?? pageUrl */
   url: string
+  /** 논문 페이지 (DOI → KCI 상세 → 출판사 → OpenAlex 순) */
+  pageUrl: string
+  /** 무료 원문(PDF 등). 없으면 null */
+  fullTextUrl: string | null
   abstract: string
   keywordsKo: string[]
   keywordsEn: string[]

@@ -8,7 +8,7 @@ import { PackageTab } from '../components/PackageTab'
 import { ReferencesTab } from '../components/ReferencesTab'
 import { NewsCard, PaperCard } from '../components/SourceCards'
 import { EmptyState, ErrorBox, Notice, type SentenceLookup } from '../components/common'
-import { engine, toUiError, type UiError } from '../engine/client'
+import { relayReady, engine, toUiError, type UiError } from '../engine/client'
 import { MODE_LABEL, SOURCE_LABEL, type Draft, type Query } from '../state'
 
 type TabKey = 'sources' | 'key' | 'compare' | 'check' | 'package' | 'disclosure' | 'refs'
@@ -99,8 +99,9 @@ export function ResultScreen({ draft, query, research, error, onSwitchMode, onRe
     if (research.sourceStatus[k] === 'failed') notices.push(`${SOURCE_LABEL[k]} 검색이 잠시 안 돼요. 나머지 자료로 보여 드려요.`)
   }
   if (draft.sources.openalex && research.sourceStatus.openalex === 'skipped') {
-    notices.push('영어 키워드를 못 찾아서 해외 논문은 건너뛰었어요. 질문 고치기에서 영어 키워드를 넣어 보세요.')
+    notices.push('해외 논문 검색을 건너뛰었어요. 질문 고치기에서 영어 키워드를 넣어 보세요.')
   }
+  if (!relayReady) notices.push('지금은 해외 논문만 검색돼요. 국내 논문과 뉴스 검색은 준비 중이에요.')
 
   return (
     <div className="screen">

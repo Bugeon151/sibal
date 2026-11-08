@@ -50,7 +50,9 @@ export function splitSentences(text: string, minLength = 10): string[] {
   const t = protect(text.replace(/\s+/g, ' ').trim())
   // 1) 문장부호 뒤 공백  2) 한국어 종결 '다.' 뒤에 공백 없이 이어지는 경우
   const parts = t
-    .split(/(?<=[.?!。])\s+|(?<=[다요음임함됨]\.)(?=[가-힣A-Za-z])/)
+    // 문장부호 뒤 공백 + 문장 시작으로 볼 수 있는 글자(대문자·한글·숫자·따옴표·괄호)일 때만 나눈다.
+    // ("Spearman's ? = -0.337"처럼 깨진 기호 뒤에서 나뉘지 않게)
+    .split(/(?<=[.?!。])\s+(?=[A-Z가-힣0-9"'“‘(\[])|(?<=[다요음임함됨]\.)(?=[가-힣A-Za-z])/)
     .map((s) => restore(s).trim())
     .filter((s) => s.length > 0)
 

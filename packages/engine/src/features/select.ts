@@ -6,7 +6,7 @@ import type { RawNews, RawPaper } from '../sources/types'
 import { normalizeDoi, titleKey } from '../text/normalize'
 import type { Tokenizer } from '../text/tokenizer'
 
-export type ScoredPaper = RawPaper & { score: number; selectReasons: string[]; sentenceCount: number }
+export type ScoredPaper = RawPaper & { score: number; selectReasons: string[]; sentenceCount: number; topicCoverage: number }
 export type ScoredNews = RawNews & { score: number }
 
 /**
@@ -72,9 +72,18 @@ export function scorePapers(
   tokenizer: Tokenizer,
   sentenceCount: (p: RawPaper) => number,
   nowYear: number,
+  /** 핵심 키워드별 동치 집합 (동의어·영어 포함). 제목·초록에 몇 개가 들어 있는지로 주제 포함률을 본다 */
+  keywordSets: Set<string>[] = [],
 ): ScoredPaper[] {
   const w = config.paperScore
-  const bm = new Bm25Index(papers.map((p) => tokenizer.tokens(`${p.title} ${p.abstract}`)))
+  const docTokens = papers.map((p) => tokenizer.tokens(`${p.title} ${p.abstract}`))
+  const bm = new Bm25Index(docTokens)
+  // 주제 포함률: 핵심 키워드 중 제목·초록에 나오는 비율. 인용이 많아도 주제가 빠진 논문이 뽑히지 않게 점수에 곱한다
+  const coverage = docTokens.map((tokens) => {
+    if (keywordSets.length === 0) return 1
+    const set = new Set(tokens)
+    return keywordSets.filter((forms) => [...forms].some((f) => set.has(f))).length / keywordSets.length
+  })
   const kw = normalizeByMax(bm.scoreAll(queryTokens))
   const cites = normalizeByMax(papers.map((p) => Math.log(1 + (p.citedBy ?? 0))))
   const citeRank = papers
@@ -84,20 +93,24 @@ export function scorePapers(
 
   return papers.map((p, i) => {
     const recency = Math.max(0, 1 - (nowYear - p.year) / w.recencyYears)
-    const score = w.keyword * kw[i]! + w.citation * cites[i]! + w.recency * recency + w.oa * (p.isOa ? 1 : 0)
+    const base = w.keyword * kw[i]! + w.citation * cites[i]! + w.recency * recency + w.oa * (p.isOa ? 1 : 0)
+    const score = base * (0.4 + 0.6 * coverage[i]!)
     const reasons: string[] = []
-    if (kw[i]! >= 0.7) reasons.push('주제와 잘 맞음')
+    if (kw[i]! >= 0.7 && coverage[i]! >= 0.99) reasons.push('주제와 잘 맞음')
     if ((p.citedBy ?? 0) > 0 && citeRank.indexOf(i) < Math.max(1, Math.ceil(papers.length * 0.2))) reasons.push('피인용 상위')
     if (nowYear - p.year <= 5) reasons.push('최근 5년')
     if (p.isOa) reasons.push('원문 공개')
     if (p.source === 'kci') reasons.push('국내 학술지')
-    return { ...p, score: Math.round(score * 10) / 10, selectReasons: reasons, sentenceCount: sentenceCount(p) }
+    return { ...p, score: Math.round(score * 10) / 10, selectReasons: reasons, sentenceCount: sentenceCount(p), topicCoverage: coverage[i]! }
   })
 }
 
 /** 상위 3~5편. 초록 문장이 부족하면 맨 뒤. 두 소스가 다 있으면 소스별 최소 1편. */
-export function selectPapers(scored: ScoredPaper[]): { selected: ScoredPaper[]; pool: ScoredPaper[] } {
+export function selectPapers(all: ScoredPaper[]): { selected: ScoredPaper[]; pool: ScoredPaper[] } {
   const s = config.paperSelect
+  // 핵심 키워드를 대부분(2/3 이상) 담은 논문이 최소 편수만큼 있으면, 절반 이하만 담은 논문은 선별에서 뺀다 (후보 풀에는 남김)
+  const onTopic = all.filter((p) => p.topicCoverage >= 0.66)
+  const scored = onTopic.length >= s.min ? all.filter((p) => p.topicCoverage > 0.5) : all
   const ranked = [...scored].sort((a, b) => {
     const aOk = a.sentenceCount >= s.minSentences ? 1 : 0
     const bOk = b.sentenceCount >= s.minSentences ? 1 : 0
@@ -128,7 +141,7 @@ export function selectPapers(scored: ScoredPaper[]): { selected: ScoredPaper[]; 
     (a, b) => Number(b.sentenceCount >= s.minSentences) - Number(a.sentenceCount >= s.minSentences) || b.score - a.score,
   )
   const chosen = new Set(selected)
-  const pool = ranked.filter((p) => !chosen.has(p)).slice(0, config.candidatePoolSize)
+  const pool = [...all].sort((a, b) => b.score - a.score).filter((p) => !chosen.has(p)).slice(0, config.candidatePoolSize)
   return { selected, pool }
 }
 

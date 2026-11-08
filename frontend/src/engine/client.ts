@@ -20,8 +20,17 @@ export function toUiError(e: unknown): UiError {
 
 const relayUrl = import.meta.env.VITE_RELAY_URL?.trim() || null
 
-/** 중계 함수 주소가 없으면 데모 모드 (엔진 테스트용 예시 자료로 동작) */
-export const isDemo = relayUrl === null
+/**
+ * 검색 범위
+ * - 'full': 중계 함수가 있어 국내 논문·해외 논문·뉴스 모두 실제 검색
+ * - 'openalex': 중계 함수가 아직 없어 해외 논문(OpenAlex)만 실제 검색 (키가 필요 없음)
+ * - 'demo': VITE_DEMO=true. 엔진 테스트용 예시 자료로 동작 (개발용)
+ */
+export const scope: 'full' | 'openalex' | 'demo' =
+  import.meta.env.VITE_DEMO === 'true' ? 'demo' : relayUrl ? 'full' : 'openalex'
+export const isDemo = scope === 'demo'
+/** 국내 논문·뉴스를 검색할 수 있는지 (중계 함수가 있거나 데모) */
+export const relayReady = scope !== 'openalex'
 
 const worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module', name: 'engine' })
 const pending = new Map<number, { resolve: (v: unknown) => void; reject: (e: UiError) => void }>()
@@ -30,6 +39,7 @@ let seq = 0
 worker.postMessage({
   type: 'init',
   relayBaseUrl: relayUrl,
+  demo: isDemo,
   deviceId: getDeviceId(),
   openAlexDirect: import.meta.env.VITE_OPENALEX_DIRECT === 'true',
 } satisfies InitMessage)

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import type { Mode, SourceKey } from '@suhaengcut/engine'
 import { CharCount, ErrorBox } from '../components/common'
-import type { UiError } from '../engine/client'
+import { relayReady, type UiError } from '../engine/client'
 import { cleanLine, LIMITS, lengthError } from '../lib/input'
 import { loadRecent, type RecentItem } from '../lib/storage'
 import { MODE_LABEL, SOURCE_LABEL, SUBJECTS, type Draft, type Sources, type Subject, type Years } from '../state'
@@ -21,7 +21,10 @@ export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRec
   const [mode, setMode] = useState<Mode | null>(null)
   const [topic, setTopic] = useState(initial?.topic ?? '')
   const [subject, setSubject] = useState<Subject>(initial?.subject ?? '기타')
-  const [sources, setSources] = useState<Sources>(initial?.sources ?? { kci: true, openalex: true, news: true })
+  // 중계 함수가 없으면 국내 논문·뉴스는 아직 검색할 수 없다 (해외 논문만)
+  const [sources, setSources] = useState<Sources>(
+    relayReady ? (initial?.sources ?? { kci: true, openalex: true, news: true }) : { kci: false, openalex: true, news: false },
+  )
   const [years, setYears] = useState<Years>(initial?.years ?? 10)
   const [recent, setRecent] = useState(loadRecent)
   const [touched, setTouched] = useState(false)
@@ -123,17 +126,19 @@ export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRec
             <div className="chips">
               {SOURCE_KEYS.map((k) => {
                 const last = sources[k] && onCount === 1
+                const notReady = !relayReady && k !== 'openalex'
                 return (
                   <button
                     type="button"
                     key={k}
                     className={`chip ${sources[k] ? 'on' : ''}`}
                     aria-pressed={sources[k]}
-                    disabled={last}
-                    title={last ? '최소 1개는 켜져 있어야 해요' : undefined}
+                    disabled={last || notReady}
+                    title={notReady ? '준비 중이에요' : last ? '최소 1개는 켜져 있어야 해요' : undefined}
                     onClick={() => setSources({ ...sources, [k]: !sources[k] })}
                   >
                     {SOURCE_LABEL[k]}
+                    {notReady && ' (준비 중)'}
                   </button>
                 )
               })}

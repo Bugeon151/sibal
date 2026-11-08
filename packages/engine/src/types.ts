@@ -20,7 +20,12 @@ export type Paper = {
   language: Lang
   citedBy: number | null
   isOa: boolean
+  /** 하위 호환: fullTextUrl ?? pageUrl */
   url: string
+  /** "논문 보기" 링크: DOI → KCI 상세 → 출판사 → OpenAlex 페이지 */
+  pageUrl: string
+  /** "원문 PDF" 링크: 무료 원문이 있을 때만 */
+  fullTextUrl: string | null
   score: number
   selectReasons: string[]
   sentences: Sentence[]
@@ -107,7 +112,7 @@ export type RunResearchOutput = {
 export type CheckSentencesInput = { researchId: string; text: string }
 
 /** 보완 논문 제안용 후보 (선별되지 않은 논문의 서지) */
-export type CandidatePaper = Pick<Paper, 'id' | 'source' | 'title' | 'authors' | 'etAl' | 'journal' | 'year' | 'url' | 'doi'>
+export type CandidatePaper = Pick<Paper, 'id' | 'source' | 'title' | 'authors' | 'etAl' | 'journal' | 'year' | 'url' | 'pageUrl' | 'fullTextUrl' | 'doi'>
 
 export type CheckSentencesOutput = {
   results: CheckResult[]

@@ -8,7 +8,7 @@ import type { RawPaper } from '../src/sources/types'
 
 const paper = (o: Partial<RawPaper>): RawPaper => ({
   source: 'openalex', sourceId: 'x', doi: null, title: 't', authors: [], journal: null, year: 2020, language: 'en',
-  citedBy: null, isOa: false, url: '', abstract: '', keywordsKo: [], keywordsEn: [], ...o,
+  citedBy: null, isOa: false, url: '', pageUrl: '', fullTextUrl: null, abstract: '', keywordsKo: [], keywordsEn: [], ...o,
 })
 
 describe('리뷰 수정', () => {
