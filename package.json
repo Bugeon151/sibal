@@ -1,0 +1,20 @@
+{
+  "name": "suhaengcut",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "eval:f6": "vitest run packages/engine/eval --reporter=verbose",
+    "build:dict": "tsx packages/engine/scripts/build-dictionary.ts",
+    "typecheck": "tsc -p packages/engine --noEmit && tsc -p packages/relay --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "note": "F6 holdout v1 (2026-11-08). v0 오류를 보고 규칙을 고친 뒤 새로 만든 세트. 정답은 실행 전에 확정했고, 이 세트를 보고 규칙을 고치지 않는다. en 주제는 실제 OpenAlex 초록.",
+  "topics": [
+    {
+      "id": "v1-sns-selfesteem",
+      "papers": [
+        "본 연구는 고등학생의 SNS 사용과 자아존중감의 관계를 분석하였다. 고등학생 520명을 대상으로 설문을 실시하였다. 타인의 게시물을 수동적으로 보는 시간이 길수록 자아존중감이 낮게 나타났다. 반면 자신의 일상을 직접 게시하는 활동은 자아존중감과 유의한 관계가 없었다. 여학생에게서 수동적 이용의 부정적 영향이 더 크게 나타났다."
+      ],
+      "cases": [
+        {
+          "text": "다른 사람의 게시물을 오래 보는 고등학생일수록 자아존중감이 낮다.",
+          "label": "supported"
+        },
+        {
+          "text": "자신의 일상을 직접 게시하는 활동은 자아존중감을 높인다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "SNS 수동적 이용의 부정적 영향은 남학생에게서 더 컸다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "고등학생 520명을 대상으로 한 설문 연구가 있다.",
+          "label": "supported"
+        },
+        {
+          "text": "SNS 사용은 고등학생의 수면 시간을 줄인다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "모든 SNS 활동은 자아존중감을 떨어뜨린다.",
+          "label": "unsupported"
+        }
+      ]
+    },
+    {
+      "id": "v1-urban-heat",
+      "papers": [
+        "이 연구는 도시 열섬 현상과 녹지 면적의 관계를 분석하였다. 서울의 25개 구를 비교한 결과 녹지 비율이 높은 구일수록 여름철 평균 기온이 낮았다. 녹지 비율이 10% 증가할 때 평균 기온은 약 0.5도 낮아졌다. 그러나 겨울철 기온은 녹지 비율과 관계가 없었다."
+      ],
+      "cases": [
+        {
+          "text": "녹지가 많은 지역일수록 여름철 기온이 낮다.",
+          "label": "supported"
+        },
+        {
+          "text": "녹지 비율이 10% 늘면 평균 기온이 약 0.5도 내려간다.",
+          "label": "supported"
+        },
+        {
+          "text": "녹지 비율이 높을수록 겨울철 기온도 낮아진다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "녹지 비율이 10% 증가하면 기온이 2도 낮아진다.",
+          "label": "partial"
+        },
+        {
+          "text": "서울 25개 구를 비교한 연구가 있다.",
+          "label": "supported"
+        },
+        {
+          "text": "녹지 면적이 넓을수록 미세먼지 농도가 낮다.",
+          "label": "unsupported"
+        }
+      ]
+    },
+    {
+      "id": "v1-homework",
+      "papers": [
+        "본 연구는 숙제 시간과 중학생의 수학 성적의 관계를 분석하였다. 하루 숙제 시간이 1시간 이하인 범위에서는 숙제 시간이 길수록 수학 성적이 향상되었다. 그러나 하루 2시간을 넘는 숙제는 성적 향상과 관계가 없었고 학업 스트레스를 높였다."
+      ],
+      "cases": [
+        {
+          "text": "숙제가 하루 1시간 이하일 때는 숙제 시간이 길수록 수학 성적이 올랐다.",
+          "label": "supported"
+        },
+        {
+          "text": "하루 2시간 넘게 숙제를 하면 학업 스트레스가 높아진다.",
+          "label": "supported"
+        },
+        {
+          "text": "숙제를 많이 할수록 수학 성적은 항상 오른다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "하루 2시간 넘는 숙제는 성적을 크게 높인다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "숙제 시간은 중학생의 국어 성적과 관계가 있다.",
+          "label": "unsupported"
+        }
+      ]
+    },
+    {
+      "id": "v1-recycling",
+      "papers": [
+        "본 연구는 분리배출 교육이 초등학생의 재활용 행동에 미치는 효과를 분석하였다. 교육을 받은 학생의 분리배출 정확도는 교육 전보다 25% 향상되었다. 교육 효과는 3개월 후에도 유지되었다. 가정에서의 분리배출 실천에는 유의한 변화가 없었다."
+      ],
+      "cases": [
+        {
+          "text": "분리배출 교육을 받은 초등학생의 분리배출 정확도가 높아졌다.",
+          "label": "supported"
+        },
+        {
+          "text": "분리배출 교육의 효과는 3개월 후에도 유지되었다.",
+          "label": "supported"
+        },
+        {
+          "text": "분리배출 교육 후 가정에서의 분리배출 실천도 크게 늘었다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "분리배출 교육으로 정확도가 50% 향상되었다.",
+          "label": "partial"
+        },
+        {
+          "text": "분리배출 교육은 학생들의 환경 의식을 높인다.",
+          "label": "unsupported"
+        }
+      ]
+    },
+    {
+      "id": "en-v1-phone-sleep",
+      "papers": [
+        "Previous research associated smartphone use with worsened sleep among adolescents. However, the prior findings were mainly based on cross-sectional, self-reported data, and a between-person level of analysis. This study examined between- and within-person associations for adolescents' smartphone use and multiple sleep outcomes: sleep onset time, sleep onset latency, sleep duration, subjective sleep quality, and subjective daily sleepiness. The participants were 201 Czech adolescents (aged 13–17) who daily reported their sleep outcomes, daily stressors, and other media use for 14 consecutive days via a custom-made research app on their smartphones. The app also collected logs of the participants' smartphone use. We found that interindividual differences within the average volume of smartphone use before sleep were not associated with differences in sleep outcomes. At the within-person level, we found that, when adolescents used smartphones before sleep for longer than usual, they went to sleep earlier and slept longer. However, these two associations were weak. No other sleep outcomes were affected by the increased use of a smartphone before sleep on a given day. We found no interaction effects for age, gender, insomnia symptoms, media use, or daily stressors. However, the association between smartphone use and earlier sleep onset time was stronger on nights before a non-school day. Our findings suggest that the link between smartphone use and adolescent sleep is more complex, and not as detrimental, as claimed in some earlier studies.",
+        "Objective: To determine the frequency of smartphone addiction and poor sleep in high school adolescents and to evaluate the relationship between phone addiction and sleep, together with demographic characteristics. Methods: A face-to-face survey was applied to 730 high school students in the Kahta district of Adıyaman, Turkey, between November 2021 and January 2022. The Smartphone Addiction Inventory-Short Form (SPAI-SF) was used to assess smartphone addiction, and the Pittsburgh Sleep Quality Index (PSQI) was used to assess sleep quality. Results: The rate of smartphone addiction in adolescents was 41%, and poor sleep quality was 61%. When smartphone addiction increases, sleep quality decreases, and when sleep quality decreases smartphone addiction increases. Smartphone addiction and poor sleep quality were higher in girls compared to boys. As the parents’ education level and family income increase, the level of addiction increases, but sleep quality remain the same. We found that as age increases, the risk of smartphone addiction and the risk of deterioration in sleep quality increase. Conclusion: Smartphone addiction and poor sleep quality trigger each other in a vicious circle. The COVID-19 pandemic may have made smartphone addiction the most common addiction in the world. This addiction can increase the risk of substance addiction by impairing the quality of sleep in adolescents and lead to many physical, social, and mental problems. A multidisciplinary approach is vital for solving the problem."
+      ],
+      "cases": [
+        {
+          "text": "저녁에 스마트폰을 평소보다 오래 쓴 날 청소년은 더 일찍 잠들고 더 오래 잤다.",
+          "label": "supported"
+        },
+        {
+          "text": "스마트폰 중독이 심할수록 청소년의 수면의 질이 낮아진다.",
+          "label": "supported"
+        },
+        {
+          "text": "스마트폰 중독과 낮은 수면의 질은 남학생에게서 더 높게 나타났다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "고등학생 730명을 조사한 연구가 있다.",
+          "label": "supported"
+        },
+        {
+          "text": "스마트폰 사용은 청소년의 학업 성적을 높인다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "부모의 교육 수준이 높을수록 청소년의 수면의 질도 높아진다.",
+          "label": "unsupported"
+        }
+      ]
+    }
+  ]
+}

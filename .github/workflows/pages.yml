@@ -1,0 +1,52 @@
+name: 화면 배포 (GitHub Pages)
+
+# 저장소 Settings → Pages → Source를 "GitHub Actions"로 두면 main에 올릴 때마다 배포된다.
+# Settings → Secrets and variables → Actions → Variables에 RELAY_URL(중계 함수 주소)을 넣으면 실제 검색,
+# 비워 두면 데모 모드(예시 자료)로 배포된다.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 엔진 의존성
+        run: npm ci
+      - name: 화면 빌드
+        working-directory: frontend
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_RELAY_URL: ${{ vars.RELAY_URL }}
+        run: |
+          npm ci
+          npm run build
+          cp dist/index.html dist/404.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

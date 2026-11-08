@@ -1,0 +1,15 @@
+{
+  "name": "@suhaengcut/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "fast-xml-parser": "^5.0.0"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./worker": "./src/worker.ts"
+  }
+}

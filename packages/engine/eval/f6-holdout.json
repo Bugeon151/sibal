@@ -1,0 +1,193 @@
+{
+  "note": "F6 holdout v0 (2026-11-08). 튜닝에 쓰지 않는 세트. 정답은 실행 전에 확정했다. en-* 주제는 실제 OpenAlex 초록(영어)에 한국어 학생 문장을 검사한다.",
+  "topics": [
+    {
+      "id": "breakfast",
+      "papers": [
+        "본 연구는 아침 식사 여부가 고등학생의 수업 집중도에 미치는 영향을 분석하였다. 고등학생 450명을 대상으로 4주간 관찰하였다. 아침 식사를 거르는 학생은 오전 수업 집중도가 유의하게 낮았다. 그러나 오후 수업에서는 아침 식사 여부에 따른 차이가 나타나지 않았다. 학교 아침 급식 제도의 도입을 검토할 필요가 있다."
+      ],
+      "cases": [
+        {
+          "text": "아침을 거르는 학생은 오전 수업 집중도가 낮다.",
+          "label": "supported"
+        },
+        {
+          "text": "아침 식사를 거르면 오후 수업 집중도도 떨어진다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "고등학생 450명을 4주간 관찰한 연구가 있다.",
+          "label": "supported"
+        },
+        {
+          "text": "아침 식사를 하는 학생은 성적이 높다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "아침 식사를 거르는 학생은 오전 수업 집중도가 30% 낮았다.",
+          "label": "partial"
+        },
+        {
+          "text": "학교 아침 급식 도입을 검토할 필요가 있다.",
+          "label": "supported"
+        }
+      ]
+    },
+    {
+      "id": "game-aggression",
+      "papers": [
+        "이 연구는 폭력적인 게임 이용과 청소년 공격성의 관계를 분석하였다. 폭력적인 게임을 오래 이용한 청소년일수록 공격성 점수가 높게 나타났다. 이러한 경향은 남학생에게서 더 강하게 나타났다.",
+        "본 연구는 3년간 청소년 1,000명을 추적하여 게임 이용과 공격성의 장기적 관계를 살펴보았다. 가정환경 요인을 통제하자 게임 이용 시간과 공격성 사이에 유의한 관계가 없었다."
+      ],
+      "cases": [
+        {
+          "text": "폭력적인 게임을 오래 이용한 청소년은 공격성 점수가 높았다.",
+          "label": "supported"
+        },
+        {
+          "text": "가정환경 요인을 통제하면 게임 이용 시간과 공격성은 관계가 없었다.",
+          "label": "supported"
+        },
+        {
+          "text": "게임은 청소년의 공격성을 낮춘다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "청소년 1,000명을 3년간 추적한 연구도 있다.",
+          "label": "supported"
+        },
+        {
+          "text": "게임 이용은 청소년의 학업 성적을 떨어뜨린다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "폭력적인 게임과 공격성의 관계는 여학생에게서 더 강했다.",
+          "label": "unsupported",
+          "hard": "집단 바꿔치기 (남학생 → 여학생)"
+        }
+      ]
+    },
+    {
+      "id": "microplastic",
+      "papers": [
+        "본 연구는 해양 미세플라스틱 오염 실태를 조사하였다. 연안 해역 20곳의 바닷물 시료에서 모두 미세플라스틱이 검출되었다. 미세플라스틱 농도는 항구 주변에서 가장 높았다. 미세플라스틱의 주요 성분은 폴리에틸렌으로 확인되었다."
+      ],
+      "cases": [
+        {
+          "text": "연안 해역 20곳의 바닷물에서 모두 미세플라스틱이 검출되었다.",
+          "label": "supported"
+        },
+        {
+          "text": "미세플라스틱 농도는 항구 주변에서 가장 낮았다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "미세플라스틱의 주요 성분은 폴리프로필렌이다.",
+          "label": "unsupported",
+          "hard": "물질 바꿔치기"
+        },
+        {
+          "text": "미세플라스틱은 물고기의 성장을 방해한다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "연안 해역 10곳에서 미세플라스틱이 검출되었다.",
+          "label": "partial"
+        }
+      ]
+    },
+    {
+      "id": "min-wage",
+      "papers": [
+        "본 연구는 최저임금 인상이 청년 고용에 미친 영향을 분석하였다. 최저임금 인상 이후 숙박·음식점업의 청년 고용이 감소하였다. 반면 제조업에서는 고용 변화가 유의하지 않았다.",
+        "이 연구는 최저임금 인상이 저임금 노동자의 소득에 미친 효과를 분석하였다. 최저임금 인상 후 저임금 노동자의 월평균 소득이 증가하였다. 소득 불평등 지표도 개선된 것으로 나타났다."
+      ],
+      "cases": [
+        {
+          "text": "최저임금 인상 후 숙박·음식점업의 청년 고용이 줄었다.",
+          "label": "supported"
+        },
+        {
+          "text": "최저임금 인상은 모든 산업에서 청년 고용을 감소시켰다.",
+          "label": "partial",
+          "hard": "범위 확대 (조건부 단서어 없이 다른 문장에 반례)"
+        },
+        {
+          "text": "최저임금 인상으로 저임금 노동자의 소득이 늘었다.",
+          "label": "supported"
+        },
+        {
+          "text": "최저임금 인상은 소득 불평등을 악화시켰다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "최저임금 인상 후 제조업 고용이 크게 감소했다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "최저임금은 물가 상승의 주요 원인이다.",
+          "label": "unsupported"
+        }
+      ]
+    },
+    {
+      "id": "online-class",
+      "papers": [
+        "본 연구는 코로나19 시기 온라인 수업이 중학생의 학업 성취에 미친 영향을 분석하였다. 온라인 수업 기간 동안 수학 성취도는 하락하였으나 국어 성취도는 유의한 변화가 없었다. 가정의 학습 지원 수준이 낮은 학생일수록 성취도 하락 폭이 컸다."
+      ],
+      "cases": [
+        {
+          "text": "온라인 수업 기간에 중학생의 수학 성취도가 떨어졌다.",
+          "label": "supported"
+        },
+        {
+          "text": "온라인 수업 기간에 국어 성취도도 크게 하락했다.",
+          "label": "unsupported",
+          "hard": "한 문장 안에 수학(하락)·국어(변화 없음)가 같이 있음"
+        },
+        {
+          "text": "가정의 학습 지원이 부족한 학생은 성취도가 더 많이 떨어졌다.",
+          "label": "supported",
+          "hard": "바꿔 쓰기"
+        },
+        {
+          "text": "온라인 수업은 학생들의 학업 성취를 높였다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "온라인 수업이 중학생의 학업 성취에 미친 영향을 분석한 연구가 있다.",
+          "label": "supported"
+        }
+      ]
+    },
+    {
+      "id": "en-phone-sleep",
+      "papers": [
+        "(1) Background: Sleep is considered to be a complex condition for human beings, with the aim of ensuring physical and psychological recovery. Technology, including the cell phone, is a tool for teenagers that ensures they are always available to interact, even at night. This study aims to understand the influence of the use of smartphones on adolescent sleep quality. (2) Methods: The guidelines proposed by the Joanna Briggs Institute were followed. The search was conducted in October 2022 through the EBSCOhost platform, with access to the CINAHL Complete and Medline databases and through the b-On database. (3) Results: The use of electronic equipment plays an important role in adolescents' lives. There is a negative relationship between the use of electronic equipment, such as smartphones, and sleep, for reducing both the quality and quantity of sleep. There is also a relationship between nighttime smartphone use, insufficient sleep, and mental health problems. (4) Conclusions: The use of new technologies at night causes a change in the behavior of adolescents with repercussions in terms of the quality of sleep and sleep duration and consequent well-being and performance during the day.",
+        "Nowadays smartphones are used anywhere and at any time, day or night, by adolescents. Smartphone use, especially at night, is a risk factor for sleep disturbance and depression in adolescents. The purpose of this study was to analyse the correlation between smartphone use at night, sleep disturbance and depression symptoms in adolescents. This cross-sectional study analysed the data from 714 students in Surabaya, who were selected by using a simple random sampling technique. The independent variable was smartphone usage at night while the dependent variable was sleep disturbance and depressive symptoms. The data was collected using three questionnaires: the smartphone usage at night questionnaire, the Insomnia Severity Index questionnaire and the Kutcher Adolescent Depression Scale questionnaire. The data was then analysed using Spearman's rho analysis (α < 0.05). The results indicated that there was a relationship between the use of smartphones at night and sleep disturbance in adolescents with a positive correlation (r = 0.374), and that there was a relationship between the use of smartphones at night and depression symptoms in adolescents with a positive correlation (r = 0.360). This study highlights that the excessive use of smartphones during the night may play a significant role in sleep problems and depressive symptoms among teenagers. Adolescents with sleep disturbance and depressive symptoms should be carefully monitored for signs of smartphone addiction. Nurses should improve health education for adolescents to inform them about the positive use of smartphones to prevent sleep disturbance and to minimise depressive symptoms."
+      ],
+      "cases": [
+        {
+          "text": "스마트폰 같은 전자기기 사용은 청소년의 수면의 질을 낮춘다.",
+          "label": "supported"
+        },
+        {
+          "text": "야간 스마트폰 사용은 청소년의 수면 장애와 관련이 있다.",
+          "label": "supported"
+        },
+        {
+          "text": "스마트폰 사용은 청소년의 수면을 개선한다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "스마트폰 사용은 청소년의 키 성장을 방해한다.",
+          "label": "unsupported"
+        },
+        {
+          "text": "수라바야의 학생 714명을 분석한 연구가 있다.",
+          "label": "supported"
+        }
+      ]
+    }
+  ]
+}
