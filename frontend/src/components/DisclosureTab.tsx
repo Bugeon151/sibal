@@ -23,6 +23,7 @@ export function DisclosureTab({ researchId, ensurePackage, onExpired }: Props) {
   const [prompts, setPrompts] = useState<string[]>([])
   const [scope, setScope] = useState<string[]>(['자료 수집'])
   const [busy, setBusy] = useState(false)
+  const [tried, setTried] = useState(false)
   const [error, setError] = useState<UiError | null>(null)
   const [result, setResult] = useState<BuildDisclosureOutput | null>(null)
 
@@ -39,6 +40,7 @@ export function DisclosureTab({ researchId, ensurePackage, onExpired }: Props) {
   const canSubmit = problems.length === 0 && !promptTooLong && !otherTooLong && !busy
 
   async function submit() {
+    setTried(true)
     if (!canSubmit) return
     setBusy(true)
     setError(null)
@@ -124,14 +126,14 @@ export function DisclosureTab({ researchId, ensurePackage, onExpired }: Props) {
           </div>
         </fieldset>
 
-        {problems.length > 0 && (
+        {tried && problems.length > 0 && (
           <ul className="problems">
             {problems.map((p) => (
               <li key={p}>{p}</li>
             ))}
           </ul>
         )}
-        <button type="button" className="btn primary wide" onClick={submit} disabled={!canSubmit}>
+        <button type="button" className="btn primary wide" onClick={submit} disabled={busy}>
           사용 내역 만들기
         </button>
       </section>

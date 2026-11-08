@@ -13,6 +13,20 @@ type View =
   | { kind: 'question'; draft: Draft; suggestion: SuggestQuestionsOutput; previous?: Query }
   | { kind: 'result'; draft: Draft; query: Query; research: RunResearchOutput }
 
+const STEPS = ['주제 정하기', '질문 고르기', '자료 보기']
+
+function Stepper({ now }: { now: number }) {
+  return (
+    <ol className="stepper" aria-label="진행 단계">
+      {STEPS.map((s, i) => (
+        <li key={s} className={i < now ? 'done' : i === now ? 'now' : undefined} aria-current={i === now ? 'step' : undefined}>
+          {i + 1}. {s}
+        </li>
+      ))}
+    </ol>
+  )
+}
+
 export default function App() {
   const [view, setView] = useState<View>({ kind: 'start' })
   const [lastDraft, setLastDraft] = useState<Draft | null>(null)
@@ -81,7 +95,7 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <button type="button" className="brand" onClick={() => go({ kind: 'start' })}>
-          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width={24} height={24} />
+          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width={30} height={30} />
           수행평가 리서치
         </button>
         {isDemo && (
@@ -97,6 +111,7 @@ export default function App() {
       </header>
 
       <main className="container">
+        {view.kind !== 'result' && <Stepper now={view.kind === 'start' ? 0 : 1} />}
         {view.kind === 'start' && (
           <StartScreen
             initial={lastDraft}

@@ -15,6 +15,7 @@ type Props = {
 }
 
 const SOURCE_KEYS: SourceKey[] = ['kci', 'openalex', 'news']
+const EXAMPLES = ['스마트폰 사용 시간과 수면', '기후 변화와 식량 생산', 'SNS 사용과 자존감', '카페인과 집중력']
 
 export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRecent }: Props) {
   // 모드는 기본값 없이 매번 고른다 (AI 금지 수업에서 실수로 AI용 기능을 쓰지 않도록).
@@ -50,40 +51,57 @@ export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRec
 
   return (
     <form className="screen" onSubmit={submit} noValidate>
-      <section className="block">
+      <section className="hero">
         <h1 className="display">
           어떤 주제로
           <br />
-          탐구해요?
+          <mark className="mk">탐구</mark>해요?
         </h1>
-        <p className="sub">논문이랑 뉴스를 찾아서, 믿을 수 있는 근거만 골라 줄게요.</p>
-        <div className="field">
-          <input
-            id="topic"
-            aria-label="탐구 주제"
-            className="input xl"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="예: 스마트폰 사용 시간과 수면"
-            enterKeyHint="next"
-            autoComplete="off"
-          />
-          <div className="field-foot">
-            {touched && topicError ? <p className="field-error">{topicError}</p> : <span />}
-            <CharCount value={cleaned.length} max={LIMITS.topic.max} />
-          </div>
-        </div>
+        <p className="sub">{relayReady ? '논문이랑 뉴스에서 믿을 만한 근거만 골라 줄게요.' : '논문에서 믿을 만한 근거만 골라 줄게요.'}</p>
       </section>
 
+      <div className="field">
+        <input
+          id="topic"
+          aria-label="탐구 주제"
+          className="input xl"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="예: 스마트폰 사용 시간과 수면"
+          enterKeyHint="next"
+          autoComplete="off"
+        />
+        <div className="field-foot">
+          {touched && topicError ? <p className="field-error">{topicError}</p> : <span />}
+          <CharCount value={cleaned.length} max={LIMITS.topic.max} />
+        </div>
+        {!cleaned && (
+          <div className="examples">
+            <span className="hint">이런 것도 돼요</span>
+            {EXAMPLES.map((ex) => (
+              <button type="button" key={ex} className="ex-chip" onClick={() => setTopic(ex)}>
+                {ex}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <section className="block">
-        <h2 className="block-title">이번 수행평가, AI 써도 돼요?</h2>
+        <div className="block-head">
+          <h2 className="block-title">이번 수행평가, AI 써도 돼요?</h2>
+          <p className="hint">선생님이 정한 규칙대로 골라 주세요.</p>
+        </div>
         <div className="mode-pick" role="radiogroup" aria-label="모드">
           <button type="button" role="radio" aria-checked={mode === 'ai'} className={`mode-card ${mode === 'ai' ? 'on' : ''}`} onClick={() => setMode('ai')}>
+            <span className="check" aria-hidden>
+              ✓
+            </span>
             <span className="mode-emoji" aria-hidden>
               🙆
             </span>
             <strong>네, 써도 돼요</strong>
-            <span>자료 + AI용 프롬프트 + 사용 내역까지</span>
+            <span className="mode-desc">자료 + AI한테 물어볼 프롬프트 + 사용 내역까지</span>
           </button>
           <button
             type="button"
@@ -92,22 +110,33 @@ export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRec
             className={`mode-card ${mode === 'search_only' ? 'on' : ''}`}
             onClick={() => setMode('search_only')}
           >
+            <span className="check" aria-hidden>
+              ✓
+            </span>
             <span className="mode-emoji" aria-hidden>
               🙅
             </span>
             <strong>아니요, 검색만</strong>
-            <span>자료·핵심 문장·근거 검사만</span>
+            <span className="mode-desc">자료 · 핵심 문장 · 내 문장 근거 검사</span>
           </button>
         </div>
         {touched && !mode && <p className="field-error">하나 골라 주세요.</p>}
-        <p className="hint">어느 쪽이든 이 서비스는 AI를 쓰지 않아요. 검색 결과에서 원문 문장만 골라 보여줘요.</p>
+        <p className="mode-note">
+          <span aria-hidden>💡</span>
+          <span>어느 쪽이든 이 앱은 AI를 안 써요. 검색된 원문 문장만 골라서 보여줘요.</span>
+        </p>
       </section>
 
       <details className="block options">
         <summary>
-          <span>검색 옵션</span>
-          <span className="summary-val">
-            {subject} · {SOURCE_KEYS.filter((k) => sources[k]).map((k) => SOURCE_LABEL[k]).join('·')} · {years === 0 ? '전체 기간' : `최근 ${years}년`}
+          <span className="opt-icon" aria-hidden>
+            ⚙️
+          </span>
+          <span className="opt-text">
+            검색 옵션
+            <span className="summary-val">
+              {subject} · {SOURCE_KEYS.filter((k) => sources[k]).map((k) => SOURCE_LABEL[k]).join('·')} · {years === 0 ? '전체 기간' : `최근 ${years}년`}
+            </span>
           </span>
         </summary>
         <div className="options-body">
@@ -170,6 +199,9 @@ export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRec
             {recent.map((r) => (
               <li key={r.at}>
                 <button type="button" className="recent-row" onClick={() => onOpenRecent(r)}>
+                  <span className="recent-ic" aria-hidden>
+                    🕘
+                  </span>
                   <span className="recent-text">
                     <strong>{r.question}</strong>
                     <span>
@@ -191,7 +223,7 @@ export function StartScreen({ initial, error, onSubmit, onOpenRecent, onClearRec
 
       <div className="cta-bar">
         <button type="submit" className="btn primary cta">
-          다음
+          질문 고르러 가기
         </button>
       </div>
     </form>

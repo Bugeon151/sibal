@@ -13,14 +13,14 @@ import { MODE_LABEL, SOURCE_LABEL, type Draft, type Query } from '../state'
 
 type TabKey = 'sources' | 'key' | 'compare' | 'check' | 'package' | 'disclosure' | 'refs'
 
-const TABS: { key: TabKey; label: string; aiOnly: boolean }[] = [
-  { key: 'sources', label: '자료', aiOnly: false },
-  { key: 'key', label: '핵심 문장', aiOnly: false },
-  { key: 'compare', label: '비교표', aiOnly: false },
-  { key: 'check', label: '내 문장 검사', aiOnly: false },
-  { key: 'package', label: 'AI 프롬프트', aiOnly: true },
-  { key: 'disclosure', label: 'AI 사용 내역', aiOnly: true },
-  { key: 'refs', label: '참고문헌', aiOnly: false },
+const TABS: { key: TabKey; label: string; icon: string; aiOnly: boolean }[] = [
+  { key: 'sources', label: '자료', icon: '📚', aiOnly: false },
+  { key: 'key', label: '핵심 문장', icon: '🖍️', aiOnly: false },
+  { key: 'compare', label: '비교표', icon: '📊', aiOnly: false },
+  { key: 'check', label: '내 문장 검사', icon: '✅', aiOnly: false },
+  { key: 'package', label: 'AI 프롬프트', icon: '💬', aiOnly: true },
+  { key: 'disclosure', label: 'AI 사용 내역', icon: '📝', aiOnly: true },
+  { key: 'refs', label: '참고문헌', icon: '📎', aiOnly: false },
 ]
 
 type Props = {
@@ -118,21 +118,28 @@ export function ResultScreen({ draft, query, research, error, onSwitchMode, onRe
         </div>
       </div>
 
-      <header className="result-head">
-        <p className="kicker">{draft.topic}</p>
+      <header className="result-hero">
+        <p className="kicker">📌 {draft.topic}</p>
         <h1 className="display sm">{query.question}</h1>
-        <div className="stats">
-          <span>
-            논문 <strong>{papers.length}</strong>편
+        <div className="stat-row">
+          <span className="stat">
+            <b>{papers.length}</b>논문
           </span>
-          <span>
-            뉴스 <strong>{news.length}</strong>건
+          <span className="stat">
+            <b>{news.length}</b>뉴스
           </span>
-          {research.keywordsEn.length > 0 && <span className="stats-en">{research.keywordsEn.join(', ')}</span>}
-          <button type="button" className="link" onClick={onEditQuestion}>
-            질문·키워드 고치기
+          <button type="button" className="stat-edit" onClick={onEditQuestion}>
+            ✏️ 질문·키워드 고치기
           </button>
         </div>
+        {research.keywordsEn.length > 0 && (
+          <p className="en-kw">
+            해외 검색어
+            {research.keywordsEn.map((k) => (
+              <span key={k}>{k}</span>
+            ))}
+          </p>
+        )}
       </header>
 
       {expired && <ErrorBox error={expired} onRetry={onRerun} retryLabel="같은 조건으로 다시 찾기" />}
@@ -144,19 +151,26 @@ export function ResultScreen({ draft, query, research, error, onSwitchMode, onRe
       ))}
       {!isAi && <Notice>검색만 모드예요. AI 프롬프트와 사용 내역 탭은 숨겼어요.</Notice>}
 
+      <div className="tabs-wrap">
       <nav className="tabs" role="tablist" aria-label="결과">
         {tabs.map((t) => (
           <button key={t.key} type="button" role="tab" aria-selected={tab === t.key} className={tab === t.key ? 'on' : ''} onClick={() => setTab(t.key)}>
+            <span className="ti" aria-hidden>
+              {t.icon}
+            </span>
             {t.label}
           </button>
         ))}
       </nav>
+      </div>
 
       {/* 탭을 오가도 입력과 결과가 남도록 모두 마운트해 두고 숨긴다 */}
       <div role="tabpanel" hidden={tab !== 'sources'} className="stack">
         {papers.length > 0 && (
           <>
-            <h2 className="list-title">논문</h2>
+            <h2 className="list-title">
+              논문 <span className="n">{papers.length}</span>
+            </h2>
             {papers.map((p) => (
               <PaperCard key={p.id} paper={p} />
             ))}
@@ -164,7 +178,10 @@ export function ResultScreen({ draft, query, research, error, onSwitchMode, onRe
         )}
         {news.length > 0 && (
           <>
-            <h2 className="list-title">뉴스</h2>
+            <h2 className="list-title">
+              뉴스 <span className="n">{news.length}</span>
+              <span className="hint">참고용</span>
+            </h2>
             {news.map((n) => (
               <NewsCard key={n.id} news={n} />
             ))}

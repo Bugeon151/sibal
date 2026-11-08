@@ -44,12 +44,17 @@ export function QuestionScreen({ draft, suggestion, previous, error, onBack, onS
         <span className={`pill mode-${draft.mode}`}>{MODE_LABEL[draft.mode]}</span>
       </div>
 
-      <section className="block">
-        <p className="kicker">{draft.topic}</p>
-        <h1 className="display sm">어떤 질문으로 파고들까요?</h1>
+      <section className="hero">
+        <p className="kicker">📌 {draft.topic}</p>
+        <h1 className="display sm">
+          어떤 <mark className="mk">질문</mark>으로 파고들까요?
+        </h1>
         <p className="sub">하나 고르고, 마음에 안 들면 직접 고쳐도 돼요.</p>
+      </section>
+
+      <section className="block">
         <div className="choices" role="radiogroup" aria-label="탐구 질문 후보">
-          {suggestion.questions.map((q) => (
+          {suggestion.questions.map((q, i) => (
             <button
               key={q.id}
               type="button"
@@ -61,7 +66,9 @@ export function QuestionScreen({ draft, suggestion, previous, error, onBack, onS
                 setText(q.text)
               }}
             >
-              <span className="radio" aria-hidden />
+              <span className="qn" aria-hidden>
+                Q{i + 1}
+              </span>
               {q.text}
             </button>
           ))}
@@ -85,7 +92,7 @@ export function QuestionScreen({ draft, suggestion, previous, error, onBack, onS
       </section>
 
       <section className="block">
-        <h2 className="block-title">이 키워드로 찾을게요</h2>
+        <h2 className="block-title">🔑 이 키워드로 찾을게요</h2>
         <TagInput
           id="kw"
           label="키워드"
@@ -101,7 +108,7 @@ export function QuestionScreen({ draft, suggestion, previous, error, onBack, onS
           <TagInput
             id="kw-en"
             label="영어 키워드 (선택)"
-            hint="비워 두면 국내 논문의 영어 키워드로 알아서 채워요."
+            hint="비워 두면 주제를 알아서 영어로 바꿔서 찾아요."
             tags={keywordsEn}
             onChange={setKeywordsEn}
             max={LIMITS.keywordsMax}
@@ -115,7 +122,7 @@ export function QuestionScreen({ draft, suggestion, previous, error, onBack, onS
 
       <div className="cta-bar">
         <button type="button" className="btn primary cta" onClick={submit}>
-          자료 찾기
+          자료 찾으러 가기
         </button>
       </div>
     </div>

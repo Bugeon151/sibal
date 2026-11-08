@@ -51,7 +51,7 @@ export function ComparisonTab({ papers, comparison, lookup }: Props) {
               <tr key={c.concept}>
                 <th scope="row">
                   {c.concept}
-                  <span className={`agree ${c.agreement}`}>{AGREEMENT_LABEL[c.agreement]}</span>
+                  <span className={`agree-tag ${c.agreement}`}>{AGREEMENT_LABEL[c.agreement]}</span>
                 </th>
                 {papers.map((p) => {
                   const cell = cellOf(row, p.id)

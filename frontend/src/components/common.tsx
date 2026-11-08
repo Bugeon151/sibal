@@ -100,7 +100,7 @@ export function BusyOverlay({ message }: { message: string }) {
   return (
     <div className="overlay" role="status" aria-live="polite">
       <div className="overlay-card">
-        <span className="spinner lg" aria-hidden />
+        <span className="marker-load" aria-hidden />
         <p>{message}</p>
       </div>
     </div>

@@ -24,7 +24,9 @@ export function PaperCard({ paper }: { paper: Paper }) {
         <span className="pid">{paper.id}</span>
         <span className={`pill ${paper.source}`}>{paper.source === 'kci' ? '국내' : '해외'}</span>
         {paper.isOa && <span className="pill oa">원문 무료</span>}
-        <span className="score">{Math.round(paper.score)}점</span>
+        <span className="score" title="주제와 맞는 정도, 인용 수, 최신성을 합친 점수">
+          <b>{Math.round(paper.score)}</b>점
+        </span>
       </div>
       <h3 className="card-title">
         {paper.pageUrl ? (
