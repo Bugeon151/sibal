@@ -4,7 +4,7 @@ compatibility_date = "2026-10-01"
 
 [vars]
 # 쉼표로 구분. 프론트 배포 주소가 정해지면 추가한다.
-ALLOWED_ORIGINS = "https://parkbugeon-bit.github.io,http://localhost:5173"
+ALLOWED_ORIGINS = "https://bugeon151.github.io,http://localhost:5173"
 RATE_PER_MINUTE = "30"
 
 # 비밀 값은 여기에 쓰지 않는다. 아래 명령으로 등록:

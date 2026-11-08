@@ -21,7 +21,7 @@ npm run build      # 타입 체크 + 정적 PWA 빌드 (dist/)
 | --- | --- |
 | `VITE_RELAY_URL` | 키 중계 함수 주소 (절대 URL). **비우면 데모 모드**: 엔진 테스트 fixture(`packages/engine/test/fixtures.ts`)를 응답으로 쓴다. 주제와 상관없이 같은 예시 자료가 나오고, 화면 상단에 "데모" 표시가 뜬다. |
 | `VITE_OPENALEX_DIRECT` | 개발용. `true`면 OpenAlex를 직접 호출만 한다. 기본은 직접 호출 후 한도에 걸리면 중계 함수로 넘어감 |
-| `BASE_PATH` (빌드 시) | 하위 경로 배포용. GitHub Pages는 `/sibal-hehe/` |
+| `BASE_PATH` (빌드 시) | 하위 경로 배포용. GitHub Pages는 `/sibal/` (워크플로가 저장소 이름으로 자동 설정) |
 
 ## 디자인 원칙
 
