@@ -101,8 +101,8 @@ test('검색만 모드: AI 탭이 없다', async ({ page }) => {
 })
 
 test('업데이트 전 데모 기록이 남아 있으면 지운다', async ({ page }) => {
-  await openApp(page)
-  // 옛 버전 상태 흉내: 데이터 버전 없음 + 최근 리서치 목록 + 데모 캐시
+  // 옛 버전을 쓰던 사람이 돌아온 상황: 앱을 열기 전에 같은 출처의 다른 파일을 열어 옛 데이터를 넣어 둔다
+  await page.goto('./manifest.webmanifest')
   await page.evaluate(async () => {
     localStorage.removeItem('sr.dataVersion')
     localStorage.setItem('sr.recent.v2', JSON.stringify([{ topic: '데모 주제', question: '데모 질문', keywords: ['데모'], at: new Date().toISOString() }]))
@@ -112,12 +112,16 @@ test('업데이트 전 데모 기록이 남아 있으면 지운다', async ({ pa
       req.onsuccess = () => {
         const tx = req.result.transaction('kv', 'readwrite')
         tx.objectStore('kv').put({ value: [{ title: 'FAKE', doi: '10.2000/oa.1' }], expiresAt: Date.now() + 1e9 }, 'cache:openalex:demo:2017')
-        tx.oncomplete = () => resolve()
+        tx.oncomplete = () => {
+          req.result.close()
+          resolve()
+        }
       }
     })
   })
-  await page.reload({ waitUntil: 'load' })
-  await page.waitForTimeout(1500)
+  await openApp(page)
+  // 앱이 정리를 끝내면 데이터 버전을 남긴다
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('sr.dataVersion')), { timeout: 15_000 }).not.toBeNull()
   const state = await page.evaluate(async () => {
     const keys = await new Promise<string[]>((resolve) => {
       const req = indexedDB.open('suhaengcut', 1)
@@ -126,11 +130,12 @@ test('업데이트 전 데모 기록이 남아 있으면 지운다', async ({ pa
         r.onsuccess = () => resolve(r.result as string[])
       }
     })
-    return { recent: localStorage.getItem('sr.recent.v2'), version: localStorage.getItem('sr.dataVersion'), keys }
+    return { recent: localStorage.getItem('sr.recent.v2'), keys }
   })
   expect(state.recent).toBeNull()
-  expect(state.version).not.toBeNull()
   expect(state.keys).not.toContain('cache:openalex:demo:2017')
+  // 화면에 옛 데모 주제가 '최근 리서치'로 보이면 안 된다
+  await expect(page.getByText('데모 주제')).toHaveCount(0)
 })
 
 test('휴대폰 화면(360px)에서 가로로 넘치지 않는다', async ({ page }) => {
