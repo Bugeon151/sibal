@@ -15,12 +15,23 @@ export function watchErrors(page: Page): string[] {
 }
 
 /** 시작 → 질문 → 검색까지 학생이 하는 순서대로 진행한다 */
+// 화면 문구가 바뀌어도 동작하도록 버튼은 여러 이름을 허용한다
+const NEXT_BUTTON = /^(다음|질문 고르러 가기)/
+const SEARCH_BUTTON = /^(자료 찾기|자료 보러 가기|이걸로 찾기|자료 찾으러 가기)/
+
+/** 앱 첫 화면 열기 (서비스 워커가 뒤에서 파일을 받느라 networkidle이 오지 않으므로 입력 칸이 뜰 때까지 기다린다) */
+export async function openApp(page: Page): Promise<void> {
+  await page.goto('./', { waitUntil: 'load' })
+  await page.getByPlaceholder(/스마트폰/).waitFor({ timeout: 30_000 })
+}
+
+/** 시작 → 질문 → 검색까지 학생이 하는 순서대로 진행한다 */
 export async function search(page: Page, topic: string, mode: 'ai' | 'search_only' = 'ai'): Promise<void> {
-  await page.goto('./', { waitUntil: 'networkidle' })
+  await openApp(page)
   await page.getByPlaceholder(/스마트폰/).fill(topic)
   await page.getByText(mode === 'ai' ? '네, 써도 돼요' : '아니요, 검색만').click()
-  await page.getByRole('button', { name: '다음' }).click()
-  await page.getByRole('button', { name: '자료 찾기' }).click()
+  await page.getByRole('button', { name: NEXT_BUTTON }).click()
+  await page.getByRole('button', { name: SEARCH_BUTTON }).click({ timeout: 15_000 })
   await page.waitForSelector('article.card.paper, .empty, [role=alert]', { timeout: 90_000 })
 }
 

@@ -12,7 +12,7 @@ const fakeFetch = async (input: string) => {
 describe('worker 연결 (MessageChannel)', () => {
   it('클라이언트 → 워커 엔진 호출과 오류 전달', async () => {
     const { port1, port2 } = new MessageChannel()
-    exposeEngine(port1 as never, (o) => createEngine({ ...o, fetch: fakeFetch, store: new MemoryStore(), now: () => new Date('2026-11-08T12:00:00+09:00') }))
+    exposeEngine(port1 as never, (o) => createEngine({ openAlexRetryDelaysMs: [0, 0], ...o, fetch: fakeFetch, store: new MemoryStore(), now: () => new Date('2026-11-08T12:00:00+09:00') }))
     const engine = connectEngine(port2 as never)
 
     // init 전 호출은 오류

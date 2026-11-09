@@ -26,7 +26,7 @@ function fakeFetch(calls: Calls, fail: Partial<Record<'kci' | 'openalex' | 'news
 
 function makeEngine(calls: Calls = [], fail = {}) {
   let n = 0
-  return createEngine({
+  return createEngine({ openAlexRetryDelaysMs: [0, 0],
     relayBaseUrl: RELAY,
     fetch: fakeFetch(calls, fail),
     store: new MemoryStore(() => NOW.getTime()),
@@ -210,7 +210,7 @@ describe('KCI 재검색', () => {
   it('키워드 전체로 0건이면 핵심 키워드 2개로 다시 검색한다', async () => {
     const calls: string[] = []
     const empty = '<MetaData><outputData><result><total>0</total></result></outputData></MetaData>'
-    const e = createEngine({
+    const e = createEngine({ openAlexRetryDelaysMs: [0, 0],
       relayBaseUrl: RELAY,
       store: new MemoryStore(),
       now: () => NOW,
@@ -231,7 +231,7 @@ describe('KCI 재검색', () => {
 
 describe('OpenAlex 경로 (무료 공개용)', () => {
   const make = (openalex: (u: string) => Response, calls: string[]) =>
-    createEngine({
+    createEngine({ openAlexRetryDelaysMs: [0, 0],
       relayBaseUrl: RELAY,
       store: new MemoryStore(),
       now: () => NOW,
@@ -277,7 +277,7 @@ describe('OpenAlex 경로 (무료 공개용)', () => {
 describe('중계 함수 없이 (키 받기 전 실제 검색)', () => {
   it('KCI·뉴스는 건너뛰고 OpenAlex만 브라우저에서 직접 검색한다', async () => {
     const calls: string[] = []
-    const e = createEngine({
+    const e = createEngine({ openAlexRetryDelaysMs: [0, 0],
       relayBaseUrl: null,
       store: new MemoryStore(),
       now: () => NOW,
@@ -295,7 +295,7 @@ describe('중계 함수 없이 (키 받기 전 실제 검색)', () => {
 
   it('영문 검색어가 없으면 한국어 키워드로 OpenAlex를 검색한다', async () => {
     const calls: string[] = []
-    const e = createEngine({ relayBaseUrl: null, store: new MemoryStore(), now: () => NOW, fetch: async (u: string) => (calls.push(u), Response.json(OPENALEX_JSON)) })
+    const e = createEngine({ openAlexRetryDelaysMs: [0, 0], relayBaseUrl: null, store: new MemoryStore(), now: () => NOW, fetch: async (u: string) => (calls.push(u), Response.json(OPENALEX_JSON)) })
     await e.runResearch({ ...baseInput, topic: '탐구주제어의 현황', keywords: ['탐구주제어'], question: '탐구주제어는 무엇인가?' })
     expect(decodeURIComponent(calls.find((u) => u.startsWith('https://api.openalex.org'))!)).toContain('search=탐구주제어')
   })
@@ -314,5 +314,35 @@ describe('논문 링크', () => {
     expect(kci.pageUrl).toContain('kci.go.kr')
     expect(kci.pageUrl).toContain(kci.sourceId)
     expect(kci.fullTextUrl).toBeNull()
+  })
+})
+
+describe('OpenAlex 429 재시도 (키 없는 동시 접속 제한)', () => {
+  it('429가 나면 잠깐 뒤 다시 시도해서 결과를 준다', async () => {
+    let n = 0
+    const e = createEngine({
+      openAlexRetryDelaysMs: [1, 1, 1],
+      relayBaseUrl: null,
+      store: new MemoryStore(),
+      now: () => NOW,
+      fetch: async (u: string) => {
+        if (!u.startsWith('https://api.openalex.org')) return Response.json({})
+        n++
+        return n <= 2 ? new Response('busy', { status: 429 }) : Response.json(OPENALEX_JSON)
+      },
+    })
+    const r = await e.runResearch(baseInput)
+    expect(n).toBe(3)
+    expect(r.papers.length).toBeGreaterThan(0)
+  })
+  it('계속 429면 재시도 후 RATE_LIMITED', async () => {
+    const e = createEngine({
+      openAlexRetryDelaysMs: [1, 1],
+      relayBaseUrl: null,
+      store: new MemoryStore(),
+      now: () => NOW,
+      fetch: async (u: string) => (u.startsWith('https://api.openalex.org') ? new Response('busy', { status: 429 }) : Response.json({})),
+    })
+    await expect(e.runResearch(baseInput)).rejects.toMatchObject({ code: 'RATE_LIMITED' })
   })
 })

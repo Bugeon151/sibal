@@ -15,7 +15,7 @@ const works = { results: Array.from({ length: 15 }, (_, i) => ({ ...real.results
 const news = { items: Array.from({ length: 20 }, (_, i) => ({ title: `청소년 스마트폰 사용 수면 기사 ${i}`, originallink: `https://news${i}.example.com/a`, link: `https://n.news.naver.com/${i}`, description: '청소년의 스마트폰 사용 시간이 늘면서 수면 시간은 줄어든 것으로 조사됐다. 전문가들은 취침 전 사용을 줄여야 한다고 말했다.', pubDate: 'Mon, 02 Nov 2026 09:00:00 +0900' })) }
 
 it('성능 (최악 조건)', async () => {
-  const e = createEngine({
+  const e = createEngine({ openAlexRetryDelaysMs: [0, 0],
     relayBaseUrl: 'https://relay.test/',
     store: new MemoryStore(),
     fetch: async (u: string) => (u.includes('/kci/') ? new Response(kciXml(10)) : u.includes('/openalex') ? Response.json(works) : Response.json(news)),

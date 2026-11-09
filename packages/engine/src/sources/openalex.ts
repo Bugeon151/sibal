@@ -90,9 +90,36 @@ export function parseOpenAlexWork(w: OpenAlexWork): RawPaper | null {
  * relayBase가 있으면 중계 함수를 거친다 (중계에서 무료 키를 붙임, 전체 사용자가 하루 약 1,000회를 나눠 씀).
  * 직접 호출에는 사용자 정의 헤더를 넣지 않는다 (OpenAlex CORS 허용 헤더에 없어 사전 요청이 실패한다).
  */
+/**
+ * 키 없는 OpenAlex는 동시에 1건, 초당 약 2건만 받는다 (2026-11-09 측정: 동시 2건이면 둘 다 429).
+ * 같은 학교 IP에서 여러 학생이 동시에 검색하면 429가 나므로, 429·5xx면 잠깐 기다렸다 다시 시도한다.
+ * Retry-After가 있으면 따르고, 학생들이 같은 박자로 재시도하지 않게 대기 시간을 조금씩 흔든다.
+ */
+export const DEFAULT_RETRY_DELAYS_MS = [700, 1500, 3000, 5000]
+
+async function fetchWithRetry(fetcher: Fetcher, url: string, init: RequestInit | undefined, delays = DEFAULT_RETRY_DELAYS_MS): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    let res: Response
+    try {
+      res = await fetcher(url, init)
+    } catch {
+      if (attempt >= delays.length) throw new SourceError('openalex', 'network')
+      await sleep(jitter(delays[attempt]!))
+      continue
+    }
+    const retryable = res.status === 429 || res.status >= 500
+    if (!retryable || attempt >= delays.length) return res
+    const after = Number(res.headers.get('retry-after'))
+    await sleep(Number.isFinite(after) && after > 0 && after <= 10 ? after * 1000 : jitter(delays[attempt]!))
+  }
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const jitter = (ms: number) => Math.round(ms * (0.75 + Math.random() * 0.5))
+
 export async function searchOpenAlex(
   fetcher: Fetcher,
-  params: { query: string; fromYear: number | null; perPage?: number; relayBase?: string },
+  params: { query: string; fromYear: number | null; perPage?: number; relayBase?: string; retryDelaysMs?: number[] },
   headers: Record<string, string> = {},
 ): Promise<RawPaper[]> {
   let url: URL
@@ -109,12 +136,7 @@ export async function searchOpenAlex(
     url.searchParams.set('select', SELECT)
   }
 
-  let res: Response
-  try {
-    res = await fetcher(url.toString(), params.relayBase ? { headers } : undefined)
-  } catch {
-    throw new SourceError('openalex', 'network')
-  }
+  const res = await fetchWithRetry(fetcher, url.toString(), params.relayBase ? { headers } : undefined, params.retryDelaysMs)
   if (!res.ok) throw new SourceError('openalex', res.status)
   const body = (await res.json()) as { results?: OpenAlexWork[] }
   return (body.results ?? []).map(parseOpenAlexWork).filter((p): p is RawPaper => p !== null)

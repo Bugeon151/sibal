@@ -2,7 +2,7 @@
 // 결과 요약은 e2e/report/에 JSON으로 남긴다.
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
-import { FAKE_MARKERS, openTab, readPapers, search, watchErrors, type PaperInfo } from './helpers'
+import { FAKE_MARKERS, openApp, openTab, readPapers, search, watchErrors, type PaperInfo } from './helpers'
 
 const REPORT_DIR = new URL('./report/', import.meta.url)
 mkdirSync(REPORT_DIR, { recursive: true })
@@ -83,6 +83,7 @@ test('결과 탭 기능 (핵심 문장·비교표·문장 검사·AI 프롬프�
 
   // 참고문헌: 논문 수만큼
   panel = await openTab(page, '참고문헌')
+  await expect(panel).toContainText(papers[0]!.title.slice(0, 40), { timeout: 15_000 })
   const refs = await panel.innerText()
   for (const p of papers) expect(refs).toContain(p.title.slice(0, 40))
 
@@ -92,14 +93,15 @@ test('결과 탭 기능 (핵심 문장·비교표·문장 검사·AI 프롬프�
 
 test('검색만 모드: AI 탭이 없다', async ({ page }) => {
   await search(page, '스마트폰 사용이 청소년 수면에 미치는 영향', 'search_only')
-  const tabs = await page.getByRole('tab').allInnerTexts()
+  // 탭 이름 앞의 아이콘(📚 등)은 디자인에 따라 바뀌므로 글자만 비교한다
+  const tabs = (await page.getByRole('tab').allInnerTexts()).map((t) => t.replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim())
   expect(tabs).not.toContain('AI 프롬프트')
   expect(tabs).not.toContain('AI 사용 내역')
   expect(tabs).toContain('내 문장 검사')
 })
 
 test('업데이트 전 데모 기록이 남아 있으면 지운다', async ({ page }) => {
-  await page.goto('./', { waitUntil: 'networkidle' })
+  await openApp(page)
   // 옛 버전 상태 흉내: 데이터 버전 없음 + 최근 리서치 목록 + 데모 캐시
   await page.evaluate(async () => {
     localStorage.removeItem('sr.dataVersion')
@@ -114,7 +116,7 @@ test('업데이트 전 데모 기록이 남아 있으면 지운다', async ({ pa
       }
     })
   })
-  await page.reload({ waitUntil: 'networkidle' })
+  await page.reload({ waitUntil: 'load' })
   await page.waitForTimeout(1500)
   const state = await page.evaluate(async () => {
     const keys = await new Promise<string[]>((resolve) => {

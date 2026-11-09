@@ -60,6 +60,8 @@ export type EngineOptions = {
    * - 'direct': 직접 호출만 / 'relay': 중계 함수만
    */
   openAlexRoute?: 'auto' | 'direct' | 'relay'
+  /** OpenAlex 429·5xx 재시도 대기(ms). 기본 [700, 1500, 3000, 5000], 테스트에서는 짧게 */
+  openAlexRetryDelaysMs?: number[]
   /** 사전에 없는 한국어 용어의 영어 이름을 Wikidata에서 찾을지 (기본 true) */
   wikidata?: boolean
   /** 중계 함수 호출 제한용 임의 기기 ID. 화면 쪽에서 localStorage에 한 번 만들어 넘긴다. */
@@ -304,8 +306,8 @@ export function createEngine(opts: EngineOptions) {
       const enQuery = keywordsEn.length > 0 ? keywordsEn.join(' ') : koQuery
       // 중계 함수가 없으면 직접 호출만
       const route = relay ? (opts.openAlexRoute ?? 'auto') : 'direct'
-      const viaRelay = () => searchOpenAlex(fetcher, { query: enQuery, fromYear, relayBase: relay! }, relayHeaders)
-      const direct = () => searchOpenAlex(fetcher, { query: enQuery, fromYear })
+      const viaRelay = () => searchOpenAlex(fetcher, { query: enQuery, fromYear, relayBase: relay!, retryDelaysMs: opts.openAlexRetryDelaysMs }, relayHeaders)
+      const direct = () => searchOpenAlex(fetcher, { query: enQuery, fromYear, retryDelaysMs: opts.openAlexRetryDelaysMs })
       const load =
         route === 'relay'
           ? viaRelay
